@@ -1,0 +1,7 @@
+{
+  "name": "RPG.Runtime",
+  "rootNamespace": "RPG",
+  "references": [
+    "UnityEngine.UI"
+  ]
+}
