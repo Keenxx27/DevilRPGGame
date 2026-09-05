@@ -22,6 +22,23 @@ namespace RPG.Tests
             }
         }
 
+        [Test]
+        public void MissingAnimator_DoesNotDisableMovement()
+        {
+            GameObject gameObject = new GameObject("Movement Test");
+            try
+            {
+                gameObject.AddComponent<SpriteRenderer>();
+                MainCharacterMovement movement = gameObject.AddComponent<MainCharacterMovement>();
+
+                Assert.That(movement.enabled, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(gameObject);
+            }
+        }
+
         [TestCase(0f, 1f, 0f, 5f)]
         [TestCase(-1f, 0f, -5f, 0f)]
         [TestCase(0f, -1f, 0f, -5f)]

@@ -27,18 +27,6 @@ namespace RPG
             body = GetComponent<Rigidbody2D>();
             animator = GetComponentInChildren<Animator>();
             characterRenderer = GetComponentInChildren<SpriteRenderer>();
-
-            if (animator == null || characterRenderer == null)
-            {
-                if (Application.isPlaying)
-                {
-                    Debug.LogError(
-                        "Main Character 的子对象上需要 Animator 和 SpriteRenderer。",
-                        this);
-                }
-
-                enabled = false;
-            }
         }
 
         private void Update()
@@ -47,7 +35,10 @@ namespace RPG
                 Input.GetAxis("Horizontal"),
                 Input.GetAxis("Vertical"));
             FacingDirection = CalculateFacingDirection(FacingDirection, input);
-            UpdateAnimation();
+            if (animator != null && characterRenderer != null)
+            {
+                UpdateAnimation();
+            }
         }
 
         private void FixedUpdate()
