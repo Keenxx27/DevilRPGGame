@@ -13,7 +13,7 @@
 
 ## 同步策略
 
-从 GitHub 主项目 `main` 的当前提交创建独立工作树和分支 `codex/sync-school-library`。原主目录中未提交的 `Packages/packages-lock.json`、`ProjectSettings/PackageManagerSettings.asset` 与 `ProjectSettings/ProjectVersion.txt` 保持原样，不带入工作树，也不由同步过程修改。
+从 GitHub 主项目 `main` 的当前提交创建独立工作树和分支 `codex/sync-school-library`。原主目录中未提交的 `Packages/packages-lock.json`、`ProjectSettings/PackageManagerSettings.asset` 与 `ProjectSettings/ProjectVersion.txt` 保持原样，不由同步过程修改。为使中国版 Unity 能在隔离工作树中恢复包并运行测试，工作树可以镜像这三个本机环境配置，但它们始终保持未暂存、未提交，不进入功能分支历史或最终合并。
 
 同步采用按功能边界精确迁移，而非目录覆盖：
 
