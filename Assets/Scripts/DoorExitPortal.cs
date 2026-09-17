@@ -8,6 +8,8 @@ namespace RPG
         [SerializeField] private string destinationScene;
         [SerializeField] private string destinationId;
 
+        private bool waitingForPlayerExit;
+
         private void Awake()
         {
             if (door == null || string.IsNullOrWhiteSpace(destinationId))
@@ -28,10 +30,35 @@ namespace RPG
             TryTransition(other);
         }
 
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.GetComponentInParent<PlayerInteraction>() != null)
+            {
+                waitingForPlayerExit = false;
+            }
+        }
+
+        public static void SuppressPortalsAtDestination(Rigidbody2D player)
+        {
+            if (player == null) return;
+            Collider2D playerCollider = player.GetComponentInChildren<Collider2D>();
+            if (playerCollider == null) return;
+            foreach (DoorExitPortal portal in FindObjectsOfType<DoorExitPortal>())
+            {
+                Collider2D portalCollider = portal.GetComponent<Collider2D>();
+                if (portalCollider != null
+                    && portalCollider.bounds.Intersects(playerCollider.bounds))
+                {
+                    portal.waitingForPlayerExit = true;
+                }
+            }
+        }
+
         private void TryTransition(Collider2D other)
         {
             PlayerInteraction player = other.GetComponentInParent<PlayerInteraction>();
-            if (!CanTransition(door != null && door.IsFullyOpen, player != null))
+            if (waitingForPlayerExit
+                || !CanTransition(door != null && door.IsFullyOpen, player != null))
             {
                 return;
             }

@@ -6,13 +6,14 @@ namespace RPG
     {
         [SerializeField] private DialogueController controller;
         [SerializeField] private DialoguePage[] pages;
+        [SerializeField] private bool autoTrigger = true;
 
         public bool HasTriggered { get; private set; }
         public event System.Action Completed;
 
         private void Start()
         {
-            Trigger();
+            if (autoTrigger) Trigger();
         }
 
         public bool Trigger()

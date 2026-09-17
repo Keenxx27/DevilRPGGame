@@ -11,10 +11,17 @@ namespace RPG
         private SpriteRenderer spriteRenderer;
 
         public string DisplayName => displayName;
-        public Sprite Icon => spriteRenderer.sprite;
-        public Color IconColor => spriteRenderer.color;
+        public Sprite Icon => GetSpriteRenderer()?.sprite;
+        public Color IconColor => GetSpriteRenderer() != null
+            ? GetSpriteRenderer().color : Color.white;
         public bool CanPickUp => pickupEnabled;
         public event System.Action<WorldItem> PickedUp;
+
+        public void Configure(string itemName, bool canPickUp)
+        {
+            displayName = itemName;
+            pickupEnabled = canPickUp;
+        }
 
         private void Awake()
         {
@@ -59,6 +66,16 @@ namespace RPG
         public void SetPickupEnabled(bool enabled)
         {
             pickupEnabled = enabled;
+        }
+
+        private SpriteRenderer GetSpriteRenderer()
+        {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            return spriteRenderer;
         }
     }
 }

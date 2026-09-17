@@ -9,13 +9,49 @@ namespace RPG
         Podium,
         TeacherDesk,
         Blackboard,
-        Flowerpot
+        Flowerpot,
+        LibraryBookcase,
+        LibraryChair,
+        LibraryWallBrick,
+        LibraryReadingTable,
+        LibraryCounter,
+        JanitorRestRoomDoor,
+        StorageShelfLeft,
+        StorageShelfRight,
+        StorageCrateNorth,
+        StorageCrateSouth,
+        StorageBroom,
+        LibraryCompletePage,
+        StairwellDoor,
+        SchoolGate,
+        ApartmentDoor,
+        KitchenFoodCabinet,
+        LivingRoomLinChunbao,
+        LivingRoomSandbag,
+        LivingRoomLowCabinet,
+        LivingRoomSofa,
+        LivingRoomCoffeeTable,
+        KitchenStove,
+        PasswordNote,
+        BathroomVent,
+        BathroomMedicineCabinet,
+        BathroomToilet,
+        LinBedroomDesk,
+        LinBedroomChair,
+        LinBedroomWardrobe,
+        LinBedroomBed,
+        LinBedroomPhone
     }
 
     public interface IInvestigationHandler
     {
         bool CanInvestigate(InvestigationKind kind);
         bool TryInvestigate(InvestigationKind kind);
+    }
+
+    public interface ISelectedItemUseHandler
+    {
+        bool TryUseSelectedItem(InvestigationKind kind);
     }
 
     [RequireComponent(typeof(BoxCollider2D))]
@@ -35,6 +71,18 @@ namespace RPG
         {
             return handler is IInvestigationHandler target
                 && target.TryInvestigate(kind);
+        }
+
+        public bool TryUseSelectedItem()
+        {
+            return handler is ISelectedItemUseHandler target
+                && target.TryUseSelectedItem(kind);
+        }
+
+        public void Configure(InvestigationKind investigationKind, MonoBehaviour investigationHandler)
+        {
+            kind = investigationKind;
+            handler = investigationHandler;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

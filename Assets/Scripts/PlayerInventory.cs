@@ -9,16 +9,26 @@ namespace RPG
         private const int SlotCount = 3;
         private const float DropDistance = 1.2f;
 
+        private static readonly DialoguePage[] FullInventoryPages =
+        {
+            new DialoguePage("主角", "东西太满了，最好先把暂时用不到的东西放下。")
+        };
+
         private readonly List<WorldItem> nearbyItems = new List<WorldItem>();
         private InventorySlots<WorldItem> slots;
         private MainCharacterMovement movement;
 
         public int SelectedSlotIndex => slots.SelectedIndex;
+        public WorldItem SelectedItem => slots.Get(slots.SelectedIndex);
 
         private void Awake()
         {
             slots = new InventorySlots<WorldItem>(SlotCount);
             movement = GetComponent<MainCharacterMovement>();
+            if (GetComponent<PlasterKnifeCrafting>() == null)
+            {
+                gameObject.AddComponent<PlasterKnifeCrafting>();
+            }
         }
 
         private void Update()
@@ -27,13 +37,87 @@ namespace RPG
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                DropSelected();
+                PlayerInteraction interaction = GetComponent<PlayerInteraction>();
+                if (interaction == null || !interaction.TryUseSelectedItemOnReadingTable())
+                {
+                    DropSelected();
+                }
             }
         }
 
         public WorldItem GetSlotItem(int index)
         {
             return slots.Get(index);
+        }
+
+        public bool HasItem(string displayName)
+        {
+            for (int index = 0; index < slots.Capacity; index++)
+            {
+                WorldItem item = slots.Get(index);
+                if (item != null && item.DisplayName == displayName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public int CountItems(string displayName)
+        {
+            int count = 0;
+            for (int index = 0; index < slots.Capacity; index++)
+            {
+                WorldItem item = slots.Get(index);
+                if (item != null && item.DisplayName == displayName)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public bool TryRemoveFirst(string displayName, out WorldItem item)
+        {
+            for (int index = 0; index < slots.Capacity; index++)
+            {
+                WorldItem candidate = slots.Get(index);
+                if (candidate != null && candidate.DisplayName == displayName)
+                {
+                    item = slots.Remove(index);
+                    return true;
+                }
+            }
+
+            item = null;
+            return false;
+        }
+
+        public bool TryRemoveSelected(string displayName, out WorldItem item)
+        {
+            WorldItem selected = SelectedItem;
+            if (selected == null || selected.DisplayName != displayName)
+            {
+                item = null;
+                return false;
+            }
+
+            item = slots.RemoveSelected();
+            return true;
+        }
+
+        public bool TryStore(WorldItem item)
+        {
+            if (item == null || !item.CanPickUp || !slots.TryAdd(item, out _))
+            {
+                return false;
+            }
+
+            nearbyItems.Remove(item);
+            item.PickUp();
+            return true;
         }
 
         public void RegisterNearby(WorldItem item)
@@ -51,6 +135,20 @@ namespace RPG
 
         public void ClearNearbyItems()
         {
+            nearbyItems.Clear();
+        }
+
+        public void ClearAllItems()
+        {
+            for (int index = 0; index < slots.Capacity; index++)
+            {
+                WorldItem item = slots.Remove(index);
+                if (item != null)
+                {
+                    Destroy(item.gameObject);
+                }
+            }
+
             nearbyItems.Clear();
         }
 
@@ -79,14 +177,18 @@ namespace RPG
         public bool TryPickUpNearest()
         {
             WorldItem nearest = FindNearestActiveItem();
-            if (nearest == null || !slots.TryAdd(nearest, out _))
+            if (nearest == null)
             {
                 return false;
             }
 
-            nearbyItems.Remove(nearest);
-            nearest.PickUp();
-            return true;
+            if (TryStore(nearest))
+            {
+                return true;
+            }
+
+            DialogueController dialogue = GetComponent<DialogueController>();
+            return dialogue != null && dialogue.StartDialogue(FullInventoryPages);
         }
 
         private WorldItem FindNearestActiveItem()

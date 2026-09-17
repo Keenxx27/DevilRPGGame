@@ -75,5 +75,11 @@ namespace RPG
         {
             IsComplete = true;
         }
+
+        public void RevealCurrentPage()
+        {
+            visibleCharacterCount = CurrentPage.Text.Length;
+            revealedCharacters = visibleCharacterCount;
+        }
     }
 }

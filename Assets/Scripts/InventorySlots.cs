@@ -64,5 +64,17 @@ namespace RPG
             items[SelectedIndex] = null;
             return item;
         }
+
+        public T Remove(int index)
+        {
+            if (index < 0 || index >= items.Length)
+            {
+                return null;
+            }
+
+            T item = items[index];
+            items[index] = null;
+            return item;
+        }
     }
 }

@@ -8,8 +8,10 @@ namespace RPG
     [RequireComponent(typeof(Rigidbody2D))]
     public class MapTransitionService : MonoBehaviour
     {
+        private const string ApartmentEntranceFromSchoolId = "ApartmentEntranceFromSchool";
         private Rigidbody2D playerBody;
         private bool isTransitioning;
+        private bool schoolInventoryCleared;
 
         private void Awake()
         {
@@ -76,6 +78,12 @@ namespace RPG
             GetComponent<PlayerInteraction>()?.ClearNearbyDoors();
             GetComponent<PlayerInventory>()?.ClearNearbyItems();
             ApplyDestination(playerBody, mainCamera, destination);
+            if (!schoolInventoryCleared && destinationId == ApartmentEntranceFromSchoolId)
+            {
+                GetComponent<PlayerInventory>()?.ClearAllItems();
+                schoolInventoryCleared = true;
+            }
+            DoorExitPortal.SuppressPortalsAtDestination(playerBody);
             isTransitioning = false;
         }
 

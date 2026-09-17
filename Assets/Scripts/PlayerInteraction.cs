@@ -65,18 +65,53 @@ namespace RPG
             DoorController nearest = FindNearestDoor();
             if (nearest != null)
             {
-                nearest.ToggleDoor();
+                nearest.TryInteract(this);
                 return true;
             }
 
             InvestigationPoint investigation = FindNearestInvestigation();
             if (investigation != null)
             {
+                if (inventory != null && inventory.SelectedItem != null
+                    && investigation.TryUseSelectedItem())
+                {
+                    return true;
+                }
+
                 investigation.TryInvestigate();
                 return true;
             }
 
             return inventory != null && inventory.TryPickUpNearest();
+        }
+
+        public bool TryUseSelectedItemOnReadingTable()
+        {
+            InvestigationPoint nearest = null;
+            float nearestDistance = float.PositiveInfinity;
+            for (int index = nearbyInvestigations.Count - 1; index >= 0; index--)
+            {
+                InvestigationPoint investigation = nearbyInvestigations[index];
+                if (investigation == null || !investigation.gameObject.activeInHierarchy)
+                {
+                    nearbyInvestigations.RemoveAt(index);
+                    continue;
+                }
+
+                if (investigation.Kind != InvestigationKind.LibraryReadingTable)
+                {
+                    continue;
+                }
+
+                float distance = (investigation.transform.position - transform.position).sqrMagnitude;
+                if (distance < nearestDistance)
+                {
+                    nearest = investigation;
+                    nearestDistance = distance;
+                }
+            }
+
+            return nearest != null && nearest.TryUseSelectedItem();
         }
 
         private InvestigationPoint FindNearestInvestigation()

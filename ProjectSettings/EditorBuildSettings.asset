@@ -6,9 +6,33 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/GameInstructions.unity
+    guid: ab25aeb7ddd8b6b4fa646b82b51ee680
+  - enabled: 1
     path: Assets/Scenes/SchoolClassroom.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
     path: Assets/Scenes/SchoolCorridor.unity
     guid: 7c4c9060f30a4f678e1f136202408201
+  - enabled: 1
+    path: Assets/Scenes/SchoolLibrary.unity
+    guid: 3977431f7bb0daf4f8d52050e204cd1b
+  - enabled: 1
+    path: Assets/Scenes/SchoolStorageRoom.unity
+    guid: 91f8aa6a9f9f2e64a9a92255dd216e8f
+  - enabled: 1
+    path: Assets/Scenes/ApartmentEntrance.unity
+    guid: 15d7019794ee93b45886c807b2a473b9
+  - enabled: 1
+    path: Assets/Scenes/ApartmentLivingRoom.unity
+    guid: 17db64e8315f9134aa8e2590326b1e34
+  - enabled: 1
+    path: Assets/Scenes/ApartmentKitchen.unity
+    guid: a1f251218237cc3478e90c3ffd8924fa
+  - enabled: 1
+    path: Assets/Scenes/ApartmentBathroom.unity
+    guid: e7c2683cee6c4f840a01fcc0c3f807d8
+  - enabled: 1
+    path: Assets/Scenes/ApartmentLinChunbaoBedroom.unity
+    guid: 08f99da3fd458f14f959434e2ef6000e
   m_configObjects: {}

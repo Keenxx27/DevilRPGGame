@@ -17,6 +17,8 @@ namespace RPG
         private bool movementWasEnabled;
         private bool interactionWasEnabled;
         private bool inventoryWasEnabled;
+        private bool spaceRevealsCurrentPage;
+        private bool lockedChoiceDialogue;
         private System.Action onFinished;
 
         public bool IsPlaying => playback != null;
@@ -31,6 +33,11 @@ namespace RPG
 
         private void Update()
         {
+            if (lockedChoiceDialogue)
+            {
+                return;
+            }
+
             if (IsPlaying)
             {
                 Tick(Time.deltaTime);
@@ -41,7 +48,22 @@ namespace RPG
 
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    SkipDialogue();
+                    if (spaceRevealsCurrentPage)
+                    {
+                        if (playback.IsPageComplete)
+                        {
+                            TryAdvanceDialogue();
+                        }
+                        else
+                        {
+                            playback.RevealCurrentPage();
+                            hud.SetPage(playback.Speaker, playback.VisibleText, true);
+                        }
+                    }
+                    else
+                    {
+                        SkipDialogue();
+                    }
                 }
                 else if (Input.GetKeyDown(KeyCode.R))
                 {
@@ -63,6 +85,12 @@ namespace RPG
 
         public bool StartDialogue(DialoguePage[] pages, System.Action completion)
         {
+            return StartDialogue(pages, completion, false);
+        }
+
+        public bool StartDialogue(DialoguePage[] pages, System.Action completion,
+            bool revealCurrentPageOnSpace)
+        {
             if (IsPlaying || !HasValidPages(pages))
             {
                 return false;
@@ -77,6 +105,7 @@ namespace RPG
             }
 
             playback = new DialoguePlayback(pages);
+            spaceRevealsCurrentPage = revealCurrentPageOnSpace;
             movementWasEnabled = movement.enabled;
             interactionWasEnabled = playerInteraction.enabled;
             inventoryWasEnabled = playerInventory.enabled;
@@ -139,6 +168,45 @@ namespace RPG
 
             playback.Skip();
             FinishDialogue();
+        }
+
+        public bool BeginLockedChoiceDialogue(string speaker, string text)
+        {
+            if (IsPlaying || lockedChoiceDialogue || hud == null || movement == null
+                || playerInteraction == null || playerInventory == null)
+            {
+                return false;
+            }
+
+            movementWasEnabled = movement.enabled;
+            interactionWasEnabled = playerInteraction.enabled;
+            inventoryWasEnabled = playerInventory.enabled;
+            movement.enabled = false;
+            playerInteraction.enabled = false;
+            playerInventory.enabled = false;
+            lockedChoiceDialogue = hud.TryShowLockedChoice(speaker, text);
+            if (!lockedChoiceDialogue)
+            {
+                movement.enabled = movementWasEnabled;
+                playerInteraction.enabled = interactionWasEnabled;
+                playerInventory.enabled = inventoryWasEnabled;
+            }
+
+            return lockedChoiceDialogue;
+        }
+
+        public void EndLockedChoiceDialogue()
+        {
+            if (!lockedChoiceDialogue)
+            {
+                return;
+            }
+
+            lockedChoiceDialogue = false;
+            hud?.Hide();
+            movement.enabled = movementWasEnabled;
+            playerInteraction.enabled = interactionWasEnabled;
+            playerInventory.enabled = inventoryWasEnabled;
         }
 
         public void RegisterPrivateDialogue(PrivateDialogueTrigger source)
@@ -216,6 +284,7 @@ namespace RPG
             playerInteraction.enabled = interactionWasEnabled;
             playerInventory.enabled = inventoryWasEnabled;
             playback = null;
+            spaceRevealsCurrentPage = false;
             completion?.Invoke();
         }
     }

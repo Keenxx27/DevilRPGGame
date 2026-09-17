@@ -57,6 +57,20 @@ namespace RPG
             return true;
         }
 
+        public bool TryShowLockedChoice(string speaker, string text)
+        {
+            if (!HasValidConfiguration())
+            {
+                return false;
+            }
+
+            speakerText.text = speaker ?? string.Empty;
+            bodyText.text = text ?? string.Empty;
+            hintText.text = string.Empty;
+            panel.SetActive(true);
+            return true;
+        }
+
         public void Hide()
         {
             if (panel != null)
