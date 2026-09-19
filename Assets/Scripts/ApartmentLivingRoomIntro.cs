@@ -15,7 +15,7 @@ namespace RPG
 
         private void Update()
         {
-            if (hasPlayed) return;
+            if (hasPlayed || ThirteenCompanionState.IsTravelingWithPlayer) return;
 
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             if (dialogue == null) return;

@@ -35,4 +35,25 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ApartmentLinChunbaoBedroom.unity
     guid: 08f99da3fd458f14f959434e2ef6000e
+  - enabled: 1
+    path: Assets/Scenes/ApartmentProtagonistBedroom.unity
+    guid: ceaee2318b9e5584da1a5890008e7952
+  - enabled: 1
+    path: Assets/Scenes/RoadToSuburbs1.unity
+    guid: 5a4a7fc4ddc606849b448a9d7f50c6a1
+  - enabled: 1
+    path: Assets/Scenes/RoadToSuburbs2.unity
+    guid: c6d4e540b11bd1b46b605b44d2110445
+  - enabled: 1
+    path: Assets/Scenes/RubblePile.unity
+    guid: bfaa476e2a3fd2a478df6308d195924a
+  - enabled: 1
+    path: Assets/Scenes/AbyssEntrance.unity
+    guid: b4c07428e7fb3a54280a747a25276958
+  - enabled: 1
+    path: Assets/Scenes/FluorescentMushroomCave.unity
+    guid: 29a84d3b90eaef14d831437db2599e45
+  - enabled: 1
+    path: Assets/Scenes/RoadHome.unity
+    guid: 77a1092b5d65bcd44af90cbad6e6a926
   m_configObjects: {}

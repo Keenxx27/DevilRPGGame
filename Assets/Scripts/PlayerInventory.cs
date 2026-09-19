@@ -37,6 +37,11 @@ namespace RPG
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                if (ThirteenEncounter.TryOfferSelectedDriedMeat(this))
+                {
+                    return;
+                }
+
                 PlayerInteraction interaction = GetComponent<PlayerInteraction>();
                 if (interaction == null || !interaction.TryUseSelectedItemOnReadingTable())
                 {

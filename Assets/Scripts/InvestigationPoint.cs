@@ -40,7 +40,13 @@ namespace RPG
         LinBedroomChair,
         LinBedroomWardrobe,
         LinBedroomBed,
-        LinBedroomPhone
+        LinBedroomPhone,
+        ProtagonistBedroomBed,
+        ProtagonistBedsideTable,
+        ProtagonistPlasterBoxes,
+        SuburbanRoadTransition,
+        RubbleSwitch,
+        RubbleLoreNote
     }
 
     public interface IInvestigationHandler
@@ -52,6 +58,11 @@ namespace RPG
     public interface ISelectedItemUseHandler
     {
         bool TryUseSelectedItem(InvestigationKind kind);
+    }
+
+    public interface IRightClickSelectedItemUseHandler
+    {
+        bool TryUseSelectedItemWithRightClick(InvestigationKind kind);
     }
 
     [RequireComponent(typeof(BoxCollider2D))]
@@ -77,6 +88,12 @@ namespace RPG
         {
             return handler is ISelectedItemUseHandler target
                 && target.TryUseSelectedItem(kind);
+        }
+
+        public bool TryUseSelectedItemWithRightClick()
+        {
+            return handler is IRightClickSelectedItemUseHandler target
+                && target.TryUseSelectedItemWithRightClick(kind);
         }
 
         public void Configure(InvestigationKind investigationKind, MonoBehaviour investigationHandler)

@@ -22,6 +22,10 @@ namespace RPG
             {
                 TryInteract();
             }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                TryUseSelectedItemWithRightClick();
+            }
         }
 
         public void RegisterDoor(DoorController door)
@@ -112,6 +116,14 @@ namespace RPG
             }
 
             return nearest != null && nearest.TryUseSelectedItem();
+        }
+
+        private bool TryUseSelectedItemWithRightClick()
+        {
+            if (inventory == null || inventory.SelectedItem == null) return false;
+
+            InvestigationPoint nearest = FindNearestInvestigation();
+            return nearest != null && nearest.TryUseSelectedItemWithRightClick();
         }
 
         private InvestigationPoint FindNearestInvestigation()
