@@ -5,14 +5,14 @@ namespace RPG
 {
     public static class GameStartBootstrap
     {
-        private const string InstructionsSceneName = "GameInstructions";
+        private const string LanguageSelectionSceneName = "LanguageSelection";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void ShowInstructionsBeforeGameplay()
         {
-            if (SceneManager.GetActiveScene().name != InstructionsSceneName)
+            if (SceneManager.GetActiveScene().name != LanguageSelectionSceneName)
             {
-                SceneManager.LoadScene(InstructionsSceneName, LoadSceneMode.Single);
+                SceneManager.LoadScene(LanguageSelectionSceneName, LoadSceneMode.Single);
             }
         }
     }

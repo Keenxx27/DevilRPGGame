@@ -6,11 +6,15 @@ namespace RPG
     public class WorldItem : MonoBehaviour
     {
         [SerializeField] private string displayName = "Item";
+        [SerializeField] private string itemId;
+        [SerializeField] private string localizedNameKey;
         [SerializeField] private bool pickupEnabled = true;
 
         private SpriteRenderer spriteRenderer;
 
-        public string DisplayName => displayName;
+        public string DisplayName => string.IsNullOrWhiteSpace(localizedNameKey)
+            ? displayName : GameLocalization.Get(localizedNameKey);
+        public string ItemId => string.IsNullOrWhiteSpace(itemId) ? displayName : itemId;
         public Sprite Icon => GetSpriteRenderer()?.sprite;
         public Color IconColor => GetSpriteRenderer() != null
             ? GetSpriteRenderer().color : Color.white;
@@ -21,6 +25,12 @@ namespace RPG
         {
             displayName = itemName;
             pickupEnabled = canPickUp;
+        }
+
+        public void ConfigureLocalization(string id, string nameKey)
+        {
+            itemId = id;
+            localizedNameKey = nameKey;
         }
 
         private void Awake()

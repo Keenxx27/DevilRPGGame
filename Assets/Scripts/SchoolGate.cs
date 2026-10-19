@@ -5,23 +5,20 @@ namespace RPG
 {
     public sealed class SchoolGate : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] BeforeLibraryPages =
-        {
-            new DialoguePage("主角", "这是学校的大门，\n但我还没去图书馆，不该回家。")
-        };
-        private static readonly DialoguePage[] BeforePagePages =
-        {
-            new DialoguePage("主角", "这是学校的大门，\n但我觉得还没到回去的时候……")
-        };
-        private static readonly DialoguePage[] ReadyToLeavePages =
-        {
-            new DialoguePage("主角", "这是学校的大门，\n通过它我便能坐公交回家了。")
-        };
-
         [SerializeField] private DoorController door;
 
         private DialogueController dialogueController;
         private bool departureConfirmed;
+        private DialoguePage[] beforeLibraryPages;
+        private DialoguePage[] beforePagePages;
+        private DialoguePage[] readyToLeavePages;
+
+        private void Awake()
+        {
+            beforeLibraryPages = BuildPages("corridor.gate.beforeLibrary");
+            beforePagePages = BuildPages("corridor.gate.beforePage");
+            readyToLeavePages = BuildPages("corridor.gate.ready");
+        }
 
         private void Start()
         {
@@ -44,22 +41,33 @@ namespace RPG
             if (!CanInvestigate(kind)) return false;
             if (!SceneManager.GetSceneByName("SchoolLibrary").isLoaded)
             {
-                return dialogueController.StartDialogue(BeforeLibraryPages);
+                return dialogueController.StartDialogue(beforeLibraryPages);
             }
 
             LibraryBookPuzzle puzzle = FindObjectOfType<LibraryBookPuzzle>();
             if (puzzle == null || !puzzle.HasReadCompletePage)
             {
-                return dialogueController.StartDialogue(BeforePagePages);
+                return dialogueController.StartDialogue(beforePagePages);
             }
 
             if (!departureConfirmed)
             {
-                return dialogueController.StartDialogue(ReadyToLeavePages,
+                return dialogueController.StartDialogue(readyToLeavePages,
                     () => departureConfirmed = true);
             }
 
             return door.ToggleDoor();
+        }
+
+        private static DialoguePage[] BuildPages(params string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
     }
 }

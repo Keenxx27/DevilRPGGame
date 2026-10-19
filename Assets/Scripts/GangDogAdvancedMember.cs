@@ -7,6 +7,10 @@ namespace RPG
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
     public sealed class GangDogAdvancedMember : MonoBehaviour
     {
+        public const float SwingDistance = 1.1f;
+        public const float SwingDuration = .35f;
+        private const float CaptureDistance = .8f;
+        private const float SwingMissCooldown = .3f;
         private static readonly DialoguePage[] FirstCapturePages =
         {
             new DialoguePage("丧家犬", "不把你当恶魔拆了卖已经算好的了，滚回去！")
@@ -25,13 +29,24 @@ namespace RPG
         private Vector2 target;
         private float retargetTimer;
         private float resetCooldown;
+        private float swingTime;
+        private float swingCooldown;
+        private Vector2 facingDirection = Vector2.down;
         private PlayerInteraction player;
+
+        public bool IsSwinging => swingTime > 0f;
+        public Vector2 FacingDirection => facingDirection;
 
         public void Configure(Vector2 minimum, Vector2 maximum, string spawnId)
         {
             patrolMin = minimum;
             patrolMax = maximum;
             resetSpawnId = spawnId;
+        }
+
+        public static bool ShouldBeginSwing(float distance, float detectionRange)
+        {
+            return distance <= SwingDistance && distance <= detectionRange;
         }
 
         private void Awake()
@@ -46,12 +61,37 @@ namespace RPG
         {
             if (player == null) player = FindObjectOfType<PlayerInteraction>();
             resetCooldown = Mathf.Max(0f, resetCooldown - Time.deltaTime);
+            swingCooldown = Mathf.Max(0f, swingCooldown - Time.deltaTime);
             if (player == null) return;
 
             float distance = Vector2.Distance(body.position, player.transform.position);
-            if (distance <= .8f && resetCooldown <= 0f && !captureInProgress)
+            Vector2 playerOffset = (Vector2)player.transform.position - body.position;
+            if (!IsSwinging && playerOffset.sqrMagnitude > .0001f)
             {
-                BeginCapture();
+                facingDirection = playerOffset.normalized;
+            }
+
+            if (IsSwinging)
+            {
+                swingTime = Mathf.Max(0f, swingTime - Time.deltaTime);
+                if (!IsSwinging)
+                {
+                    if (distance <= CaptureDistance && resetCooldown <= 0f && !captureInProgress)
+                    {
+                        BeginCapture();
+                    }
+                    else
+                    {
+                        swingCooldown = SwingMissCooldown;
+                    }
+                }
+                return;
+            }
+
+            if (swingCooldown <= 0f && resetCooldown <= 0f && !captureInProgress
+                && ShouldBeginSwing(distance, detectionDistance))
+            {
+                swingTime = SwingDuration;
                 return;
             }
 
@@ -67,7 +107,7 @@ namespace RPG
 
         private void FixedUpdate()
         {
-            if (player == null || Time.timeScale <= 0f) return;
+            if (player == null || IsSwinging || Time.timeScale <= 0f) return;
             float distance = Vector2.Distance(body.position, player.transform.position);
             Vector2 destination = distance <= detectionDistance ? (Vector2)player.transform.position : target;
             float speed = distance <= detectionDistance ? chaseSpeed : patrolSpeed;

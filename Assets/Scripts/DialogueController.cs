@@ -145,6 +145,7 @@ namespace RPG
             }
 
             DialogueAdvanceResult result = playback.TryAdvance();
+            if (result != DialogueAdvanceResult.Blocked) UiAudio.PlayConfirm();
             if (result == DialogueAdvanceResult.Completed)
             {
                 FinishDialogue();

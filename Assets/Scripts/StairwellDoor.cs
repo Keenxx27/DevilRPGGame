@@ -4,13 +4,17 @@ namespace RPG
 {
     public sealed class StairwellDoor : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] Pages =
-        {
-            new DialoguePage("主角", "是通往楼梯间的门，上了楼就是其他教室。"),
-            new DialoguePage("主角", "我已经上完课了，没必要回楼上。")
-        };
-
         private DialogueController dialogueController;
+        private DialoguePage[] pages;
+
+        private void Awake()
+        {
+            pages = new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("corridor.stairwell.1")),
+                new DialoguePage("主角", GameLocalization.Get("corridor.stairwell.2"))
+            };
+        }
 
         private void Start()
         {
@@ -30,7 +34,7 @@ namespace RPG
 
         public bool TryInvestigate(InvestigationKind kind)
         {
-            return CanInvestigate(kind) && dialogueController.StartDialogue(Pages);
+            return CanInvestigate(kind) && dialogueController.StartDialogue(pages);
         }
     }
 }

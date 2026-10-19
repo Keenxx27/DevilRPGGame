@@ -19,7 +19,9 @@ namespace RPG
         [SerializeField, Min(0f)] private float degreesPerSecond = 180f;
         [SerializeField] private bool animateVisual = true;
         [SerializeField] private string requiredItemDisplayName;
+        [SerializeField] private string requiredItemId;
         [SerializeField, TextArea] private string missingItemDialogue;
+        [SerializeField] private string missingItemDialogueKey;
         [SerializeField] private bool requireSelectedItem;
         [SerializeField] private bool consumeRequiredItem;
         [SerializeField] private bool keepOpenWhenUnlocked;
@@ -81,7 +83,8 @@ namespace RPG
                 return interactionOverride.TryInteract(player);
             }
 
-            if (string.IsNullOrWhiteSpace(requiredItemDisplayName))
+            if (string.IsNullOrWhiteSpace(requiredItemDisplayName)
+                && string.IsNullOrWhiteSpace(requiredItemId))
             {
                 return ToggleDoor();
             }
@@ -92,18 +95,24 @@ namespace RPG
             }
 
             PlayerInventory inventory = player.GetComponent<PlayerInventory>();
-            if (!requireSelectedItem
-                && inventory?.HasItem(requiredItemDisplayName) == true)
+            bool hasRequiredItem = !string.IsNullOrWhiteSpace(requiredItemId)
+                ? inventory?.HasItemById(requiredItemId) == true
+                : inventory?.HasItem(requiredItemDisplayName) == true;
+            if (!requireSelectedItem && hasRequiredItem)
             {
                 return ToggleDoor();
             }
 
             if (requireSelectedItem && inventory != null
                 && inventory.SelectedItem != null
-                && inventory.SelectedItem.DisplayName == requiredItemDisplayName)
+                && (string.IsNullOrWhiteSpace(requiredItemId)
+                    ? inventory.SelectedItem.DisplayName == requiredItemDisplayName
+                    : inventory.SelectedItem.ItemId == requiredItemId))
             {
                 if (consumeRequiredItem
-                    && !inventory.TryRemoveSelected(requiredItemDisplayName, out _))
+                    && !(string.IsNullOrWhiteSpace(requiredItemId)
+                        ? inventory.TryRemoveSelected(requiredItemDisplayName, out _)
+                        : inventory.TryRemoveSelectedById(requiredItemId, out _)))
                 {
                     return false;
                 }
@@ -113,10 +122,13 @@ namespace RPG
             }
 
             DialogueController dialogue = player.GetComponent<DialogueController>();
+            string missingDialogue = string.IsNullOrWhiteSpace(missingItemDialogueKey)
+                ? missingItemDialogue
+                : GameLocalization.Get(missingItemDialogueKey);
             return dialogue != null
                 && dialogue.StartDialogue(new[]
                 {
-                    new DialoguePage("主角", missingItemDialogue)
+                    new DialoguePage("主角", missingDialogue)
                 });
         }
 
@@ -159,6 +171,7 @@ namespace RPG
             if (!motion.Toggle()) return false;
 
             ApplyMotion();
+            if (publishToGroup) UiAudio.PlayDoor(shouldOpen);
             return true;
         }
 

@@ -6,6 +6,7 @@ namespace RPG
         ISelectedItemUseHandler
     {
         private const string StickyKnifeName = "粘竿菜刀";
+        private const string BedsideKeySpriteResourcePath = "bedside-table-key-pixel-v1";
         private static readonly DialoguePage[] FirstPages =
         {
             new DialoguePage("林春宝", "在家里找找看，也许能有解开密码的线索。")
@@ -119,9 +120,10 @@ namespace RPG
             keyObject.transform.localScale = new Vector3(.5f, .3f, 1f);
             SpriteRenderer renderer = keyObject.AddComponent<SpriteRenderer>();
             SpriteRenderer source = GetComponent<SpriteRenderer>();
-            renderer.sprite = source != null ? source.sprite : null;
+            Sprite keySprite = Resources.Load<Sprite>(BedsideKeySpriteResourcePath);
+            renderer.sprite = keySprite != null ? keySprite : source != null ? source.sprite : null;
             renderer.sharedMaterial = source != null ? source.sharedMaterial : null;
-            renderer.color = new Color(.72f, .56f, .2f, 1f);
+            renderer.color = keySprite != null ? Color.white : new Color(.72f, .56f, .2f, 1f);
             renderer.sortingOrder = 5;
             BoxCollider2D collider = keyObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;

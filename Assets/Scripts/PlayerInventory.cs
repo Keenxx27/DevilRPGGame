@@ -9,11 +9,6 @@ namespace RPG
         private const int SlotCount = 3;
         private const float DropDistance = 1.2f;
 
-        private static readonly DialoguePage[] FullInventoryPages =
-        {
-            new DialoguePage("主角", "东西太满了，最好先把暂时用不到的东西放下。")
-        };
-
         private readonly List<WorldItem> nearbyItems = new List<WorldItem>();
         private InventorySlots<WorldItem> slots;
         private MainCharacterMovement movement;
@@ -69,6 +64,17 @@ namespace RPG
             return false;
         }
 
+        public bool HasItemById(string itemId)
+        {
+            for (int index = 0; index < slots.Capacity; index++)
+            {
+                WorldItem item = slots.Get(index);
+                if (item != null && item.ItemId == itemId) return true;
+            }
+
+            return false;
+        }
+
         public int CountItems(string displayName)
         {
             int count = 0;
@@ -113,6 +119,19 @@ namespace RPG
             return true;
         }
 
+        public bool TryRemoveSelectedById(string itemId, out WorldItem item)
+        {
+            WorldItem selected = SelectedItem;
+            if (selected == null || selected.ItemId != itemId)
+            {
+                item = null;
+                return false;
+            }
+
+            item = slots.RemoveSelected();
+            return true;
+        }
+
         public bool TryStore(WorldItem item)
         {
             if (item == null || !item.CanPickUp || !slots.TryAdd(item, out _))
@@ -122,6 +141,7 @@ namespace RPG
 
             nearbyItems.Remove(item);
             item.PickUp();
+            UiAudio.PlayPickup();
             return true;
         }
 
@@ -193,7 +213,10 @@ namespace RPG
             }
 
             DialogueController dialogue = GetComponent<DialogueController>();
-            return dialogue != null && dialogue.StartDialogue(FullInventoryPages);
+            return dialogue != null && dialogue.StartDialogue(new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("inventory.full"))
+            });
         }
 
         private WorldItem FindNearestActiveItem()

@@ -4,39 +4,34 @@ namespace RPG
 {
     public sealed class StorageRoomPuzzle : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] LeftShelfPages =
-        {
-            new DialoguePage("主角", "架子上全是受潮的清洁用品和旧档案。\n没有能用的。")
-        };
-        private static readonly DialoguePage[] RightShelfPages =
-        {
-            new DialoguePage("主角", "墙边堆满了工具和杂物。\n黑暗里很难分辨清楚。")
-        };
-        private static readonly DialoguePage[] NorthCratePages =
-        {
-            new DialoguePage("主角", "箱子里是替换下来的桌椅零件。\n翻不出什么特别的。")
-        };
-        private static readonly DialoguePage[] SouthCratePages =
-        {
-            new DialoguePage("主角", "这里有股发霉的纸味。\n只是些报废的试卷和杂物。")
-        };
-        private static readonly DialoguePage[] BroomWithoutGluePages =
-        {
-            new DialoguePage("主角", "这是……一把扫帚。\n暂时不知道能有什么用。")
-        };
-        private static readonly DialoguePage[] BroomWithGluePages =
-        {
-            new DialoguePage("主角", "这是……一把扫帚。\n正是我要的东西。")
-        };
-
         [SerializeField] private WorldItem broom;
 
         private DialogueController dialogueController;
         private PlayerInventory inventory;
         private bool broomInvestigated;
+        private DialoguePage[] leftShelfPages;
+        private DialoguePage[] rightShelfPages;
+        private DialoguePage[] northCratePages;
+        private DialoguePage[] southCratePages;
+        private DialoguePage[] broomWithoutGluePages;
+        private DialoguePage[] broomWithGluePages;
+
+        private void Awake()
+        {
+            leftShelfPages = BuildPages("storage.shelf.left");
+            rightShelfPages = BuildPages("storage.shelf.right");
+            northCratePages = BuildPages("storage.crate.north");
+            southCratePages = BuildPages("storage.crate.south");
+            broomWithoutGluePages = BuildPages("storage.broom.beforeGlue");
+            broomWithGluePages = BuildPages("storage.broom.afterGlue");
+        }
 
         private void Start()
         {
+            if (broom != null)
+            {
+                broom.ConfigureLocalization("storage.broom", "storage.item.broom");
+            }
             dialogueController = FindObjectOfType<DialogueController>();
             inventory = FindObjectOfType<PlayerInventory>();
             if (dialogueController == null || inventory == null || broom == null)
@@ -73,13 +68,13 @@ namespace RPG
             switch (kind)
             {
                 case InvestigationKind.StorageShelfLeft:
-                    return dialogueController.StartDialogue(LeftShelfPages);
+                    return dialogueController.StartDialogue(leftShelfPages);
                 case InvestigationKind.StorageShelfRight:
-                    return dialogueController.StartDialogue(RightShelfPages);
+                    return dialogueController.StartDialogue(rightShelfPages);
                 case InvestigationKind.StorageCrateNorth:
-                    return dialogueController.StartDialogue(NorthCratePages);
+                    return dialogueController.StartDialogue(northCratePages);
                 case InvestigationKind.StorageCrateSouth:
-                    return dialogueController.StartDialogue(SouthCratePages);
+                    return dialogueController.StartDialogue(southCratePages);
                 case InvestigationKind.StorageBroom:
                     return InvestigateBroom();
                 default:
@@ -91,13 +86,24 @@ namespace RPG
         {
             LibraryBookPuzzle libraryPuzzle = FindObjectOfType<LibraryBookPuzzle>();
             DialoguePage[] pages = libraryPuzzle != null && libraryPuzzle.HasDiscoveredGlue
-                ? BroomWithGluePages : BroomWithoutGluePages;
+                ? broomWithGluePages : broomWithoutGluePages;
             return dialogueController.StartDialogue(pages, () =>
             {
                 broomInvestigated = true;
                 broom.SetPickupEnabled(true);
                 inventory.RegisterNearby(broom);
             });
+        }
+
+        private static DialoguePage[] BuildPages(params string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
     }
 }

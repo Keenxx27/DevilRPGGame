@@ -23,6 +23,8 @@ namespace RPG
         };
 
         [SerializeField] private WorldItem boxingGloves;
+        [SerializeField] private SpriteRenderer cabinetArtworkRenderer;
+        [SerializeField] private Sprite openArtwork;
         private bool introduced;
         private bool opened;
 
@@ -60,8 +62,10 @@ namespace RPG
         private void OpenCabinet()
         {
             if (boxingGloves != null) boxingGloves.gameObject.SetActive(true);
-            SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-            if (renderer != null) renderer.color = new Color(.26f, .16f, .1f, 1f);
+            if (cabinetArtworkRenderer != null && openArtwork != null)
+            {
+                cabinetArtworkRenderer.sprite = openArtwork;
+            }
         }
     }
 }

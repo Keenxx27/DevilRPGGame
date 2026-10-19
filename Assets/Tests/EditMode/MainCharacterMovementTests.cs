@@ -102,5 +102,14 @@ namespace RPG.Tests
 
             Assert.That(facing, Is.EqualTo(Vector2.down));
         }
+
+        [Test]
+        public void ResolveAnimation_UsesIndependentLeftRunWithoutSpriteFlip()
+        {
+            CharacterAnimationState state = MainCharacterMovement.ResolveAnimation(Vector2.left, true);
+
+            Assert.That(state.Name, Is.EqualTo("Player_Left_Run"));
+            Assert.That(state.FlipX, Is.False);
+        }
     }
 }

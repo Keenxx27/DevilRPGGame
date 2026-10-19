@@ -6,16 +6,19 @@ namespace RPG
 {
     public sealed class SandbagBoxingMinigame : MonoBehaviour
     {
+        [SerializeField] private Sprite passwordNoteSprite;
+        [SerializeField] private SpriteRenderer sandbagArtworkRenderer;
+        [SerializeField] private Sprite brokenSandbagSprite;
         private static readonly KeyCode[][] StageKeys =
         {
             new[] { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D },
-            new[] { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.E },
-            new[] { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.E, KeyCode.Q }
+            new[] { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D },
+            new[] { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D }
         };
 
         private static readonly KeyCode[] AllKeys =
         {
-            KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.E, KeyCode.Q
+            KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D
         };
 
         private static readonly float[] FallSpeeds = { 175f, 260f, 360f };
@@ -69,6 +72,11 @@ namespace RPG
             inventory.enabled = false;
             dialogue.enabled = false;
             sandbagRenderer = GetComponent<SpriteRenderer>();
+            if (sandbagArtworkRenderer == null)
+            {
+                Transform artwork = transform.Find("Living Room Sandbag Artwork");
+                sandbagArtworkRenderer = artwork != null ? artwork.GetComponent<SpriteRenderer>() : null;
+            }
             originalScale = transform.localScale;
             EnsureCanvas();
             canvas.gameObject.SetActive(true);
@@ -159,6 +167,7 @@ namespace RPG
         private void RegisterPunch()
         {
             if (sandbagRenderer != null) sandbagRenderer.color = new Color(.75f, .25f, .12f, 1f);
+            if (sandbagArtworkRenderer != null) sandbagArtworkRenderer.color = new Color(.75f, .25f, .12f, 1f);
             transform.localScale = originalScale * 1.08f;
             Invoke(nameof(ResetPunchVisual), .09f);
             if (stageIndex == 0 && pendingKeys.Count > 0)
@@ -182,6 +191,7 @@ namespace RPG
         {
             transform.localScale = originalScale;
             if (sandbagRenderer != null) sandbagRenderer.color = new Color(.42f, .12f, .1f, 1f);
+            if (sandbagArtworkRenderer != null) sandbagArtworkRenderer.color = new Color(.42f, .12f, .1f, 1f);
         }
 
         private void FinishBoxing()
@@ -191,6 +201,7 @@ namespace RPG
             canvas.gameObject.SetActive(false);
             RestorePlayerControls();
             if (sandbagRenderer != null) sandbagRenderer.enabled = false;
+            if (sandbagArtworkRenderer != null) sandbagArtworkRenderer.enabled = false;
             BoxCollider2D collider = GetComponent<BoxCollider2D>();
             if (collider != null) collider.enabled = false;
             CreateBrokenSandbagAndNote();
@@ -223,7 +234,7 @@ namespace RPG
             targetTexts = new Text[AllKeys.Length];
             for (int index = 0; index < AllKeys.Length; index++)
             {
-                targetTexts[index] = CreateText("Target " + AllKeys[index], canvas.transform, 27);
+                targetTexts[index] = CreateText("Target " + AllKeys[index], canvas.transform, 48);
                 targetTexts[index].text = AllKeys[index].ToString();
                 targetTexts[index].rectTransform.anchoredPosition = new Vector2(LaneX(index), targetY);
             }
@@ -294,9 +305,11 @@ namespace RPG
             broken.transform.position = transform.position + Vector3.down * .45f;
             broken.transform.localScale = new Vector3(.85f, .5f, 1f);
             SpriteRenderer brokenRenderer = broken.AddComponent<SpriteRenderer>();
-            brokenRenderer.sprite = sandbagRenderer != null ? sandbagRenderer.sprite : null;
+            brokenRenderer.sprite = brokenSandbagSprite != null
+                ? brokenSandbagSprite
+                : sandbagRenderer != null ? sandbagRenderer.sprite : null;
             brokenRenderer.sharedMaterial = sandbagRenderer != null ? sandbagRenderer.sharedMaterial : null;
-            brokenRenderer.color = new Color(.22f, .07f, .06f, 1f);
+            brokenRenderer.color = Color.white;
             brokenRenderer.sortingOrder = 3;
 
             GameObject note = new GameObject("Password Note 6");
@@ -304,7 +317,7 @@ namespace RPG
             note.transform.position = transform.position + Vector3.down * 1.2f;
             note.transform.localScale = new Vector3(.65f, .42f, 1f);
             SpriteRenderer noteRenderer = note.AddComponent<SpriteRenderer>();
-            noteRenderer.sprite = brokenRenderer.sprite;
+            noteRenderer.sprite = passwordNoteSprite != null ? passwordNoteSprite : brokenRenderer.sprite;
             noteRenderer.sharedMaterial = brokenRenderer.sharedMaterial;
             noteRenderer.color = Color.white;
             noteRenderer.sortingOrder = 5;
@@ -314,16 +327,19 @@ namespace RPG
             InvestigationPoint point = note.AddComponent<InvestigationPoint>();
             point.Configure(InvestigationKind.PasswordNote, noteHandler);
 
-            GameObject number = new GameObject("Password Number 6");
-            number.transform.SetParent(note.transform, false);
-            TextMesh text = number.AddComponent<TextMesh>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.text = "6";
-            text.fontSize = 72;
-            text.characterSize = .12f;
-            text.anchor = TextAnchor.MiddleCenter;
-            text.alignment = TextAlignment.Center;
-            text.color = Color.black;
+            if (passwordNoteSprite == null)
+            {
+                GameObject number = new GameObject("Password Number 6");
+                number.transform.SetParent(note.transform, false);
+                TextMesh text = number.AddComponent<TextMesh>();
+                text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                text.text = "6";
+                text.fontSize = 72;
+                text.characterSize = .12f;
+                text.anchor = TextAnchor.MiddleCenter;
+                text.alignment = TextAlignment.Center;
+                text.color = Color.black;
+            }
         }
     }
 }

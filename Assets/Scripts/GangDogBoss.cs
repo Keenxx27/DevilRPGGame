@@ -16,6 +16,9 @@ namespace RPG
         private float stunTime;
         private Vector2 chargeDirection;
 
+        public bool IsCharging => prepareTime > 0f || chargeTime > 0f;
+        public bool IsStunned => stunTime > 0f;
+
         private void Awake()
         {
             body = GetComponent<Rigidbody2D>();

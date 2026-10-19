@@ -19,13 +19,12 @@ namespace RPG
         {
             new DialoguePage("主角", "它没有看肉干，反而慢慢靠近了我。"),
             new DialoguePage("主角", "它抬起前爪，小心翼翼地碰了碰我的手指。\n冰凉，还有一点粗糙。"),
-            new DialoguePage("主角", "它又跑回蘑菇丛，叼来一块内部仿佛流淌着星光的晶石。\n这是礼物。你的呢？"),
+            new DialoguePage("主角", "它又跑回蘑菇丛，叼来一块内部仿佛流淌着星光的晶石。\n这是......你的礼物吗？"),
             new DialoguePage("主角", "我……我没有恶意。"),
             new DialoguePage("？？？", "（它发出一个由三个高低不同音调组成的清脆音节。）"),
             new DialoguePage("主角", "十三……\n这个名字，怎么会忽然出现在我脑子里？"),
             new DialoguePage("十三", "（它歪了歪头，耳膜轻轻转动。）"),
-            new DialoguePage("主角", "我伸出手，掌心向上。\n十三极轻地舔了一下我的指尖。"),
-            new DialoguePage("主角", "那一刻，我十八年来所有的孤独和格格不入，\n都被这轻轻的一舔，短暂地治愈了。")
+            new DialoguePage("主角", "我伸出手，掌心向上。\n十三极轻地舔了一下我的指尖。")
         };
 
         [SerializeField] private Transform thirteenVisual;
@@ -99,6 +98,7 @@ namespace RPG
         {
             completed = true;
             ThirteenCompanionState.IsTravelingWithPlayer = true;
+            thirteenVisual?.GetComponent<ThirteenFollower>()?.BeginPersistentFollowing();
             StartCoroutine(ReturnHomeAfterBlackout());
         }
 

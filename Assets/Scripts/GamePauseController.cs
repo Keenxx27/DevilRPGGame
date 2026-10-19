@@ -7,6 +7,7 @@ namespace RPG
     public sealed class GamePauseController : MonoBehaviour
     {
         private const string InstructionsSceneName = "GameInstructions";
+        private const string NameEntrySceneName = "NameEntry";
         private GameObject pauseCanvas;
         private MainCharacterMovement movement;
         private PlayerInteraction interaction;
@@ -26,7 +27,8 @@ namespace RPG
 
         private void Update()
         {
-            if (SceneManager.GetActiveScene().name == InstructionsSceneName) return;
+            string activeSceneName = SceneManager.GetActiveScene().name;
+            if (activeSceneName == InstructionsSceneName || activeSceneName == NameEntrySceneName) return;
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 SetPaused(!isPaused);

@@ -4,21 +4,29 @@ namespace RPG
 {
     public sealed class JanitorRestRoomDoor : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] DiscoveryPages =
-        {
-            new DialoguePage("主角", "这是校工的休息室，\n还是别进去打扰他们了。"),
-            new DialoguePage("主角", "……门上挂着一串钥匙。\n校工休息室、各间教室，甚至储藏室的都有。"),
-            new DialoguePage("主角", "也许派得上用场。")
-        };
-
         [SerializeField] private WorldItem keyRing;
 
         private DialogueController dialogueController;
         private PlayerInventory inventory;
         private bool keyRingRevealed;
+        private DialoguePage[] discoveryPages;
+
+        private void Awake()
+        {
+            discoveryPages = new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("corridor.janitor.1")),
+                new DialoguePage("主角", GameLocalization.Get("corridor.janitor.2")),
+                new DialoguePage("主角", GameLocalization.Get("corridor.janitor.3"))
+            };
+        }
 
         private void Start()
         {
+            if (keyRing != null)
+            {
+                keyRing.ConfigureLocalization("corridor.janitorKeyRing", "corridor.item.janitorKeyRing");
+            }
             dialogueController = FindObjectOfType<DialogueController>();
             inventory = FindObjectOfType<PlayerInventory>();
             if (dialogueController == null || inventory == null || keyRing == null)
@@ -38,7 +46,7 @@ namespace RPG
         public bool TryInvestigate(InvestigationKind kind)
         {
             if (!CanInvestigate(kind)) return false;
-            return dialogueController.StartDialogue(DiscoveryPages, RevealKeyRing);
+            return dialogueController.StartDialogue(discoveryPages, RevealKeyRing);
         }
 
         private void RevealKeyRing()

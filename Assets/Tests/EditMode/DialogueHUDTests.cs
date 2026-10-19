@@ -14,6 +14,7 @@ namespace RPG.Tests
         [TearDown]
         public void TearDown()
         {
+            PlayerChosenName.Set(null);
             if (root != null)
             {
                 Object.DestroyImmediate(root);
@@ -66,6 +67,28 @@ namespace RPG.Tests
 
             Assert.That(hud.TryShow("教授", "测试", true), Is.False);
             LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void TryShow_ReplacesProtagonistSpeakerWithConfirmedPlayerName()
+        {
+            PlayerChosenName.Set("测试名");
+            DialogueHUD hud = CreateHud(out _, out Text speaker, out _, out _);
+
+            hud.TryShow("主角", "测试", true);
+
+            Assert.That(speaker.text, Is.EqualTo("测试名"));
+        }
+
+        [Test]
+        public void TryShowLockedChoice_KeepsNonProtagonistSpeakerUnchanged()
+        {
+            PlayerChosenName.Set("测试名");
+            DialogueHUD hud = CreateHud(out _, out Text speaker, out _, out _);
+
+            hud.TryShowLockedChoice("林春宝", "测试");
+
+            Assert.That(speaker.text, Is.EqualTo("林春宝"));
         }
 
         private DialogueHUD CreateHud(

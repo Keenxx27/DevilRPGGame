@@ -5,16 +5,20 @@ namespace RPG
 {
     public sealed class StorageRoomDarkness : MonoBehaviour
     {
-        private static readonly DialoguePage[] OpeningPages =
-        {
-            new DialoguePage("主角", "里面真黑，完全看不见。"),
-            new DialoguePage("主角", "也不知道电灯开关在哪里，\n看来只能摸索着找东西了。")
-        };
-
         private PlayerInteraction player;
         private Canvas canvas;
         private readonly RectTransform[] panels = new RectTransform[4];
         private bool openingPlayed;
+        private DialoguePage[] openingPages;
+
+        private void Awake()
+        {
+            openingPages = new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("storage.opening.1")),
+                new DialoguePage("主角", GameLocalization.Get("storage.opening.2"))
+            };
+        }
 
         private void Update()
         {
@@ -36,7 +40,7 @@ namespace RPG
             if (!openingPlayed)
             {
                 DialogueController dialogue = player.GetComponent<DialogueController>();
-                if (dialogue != null && dialogue.StartDialogue(OpeningPages)) openingPlayed = true;
+                if (dialogue != null && dialogue.StartDialogue(openingPages)) openingPlayed = true;
             }
         }
 

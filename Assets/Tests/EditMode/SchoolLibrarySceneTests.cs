@@ -28,7 +28,7 @@ namespace RPG.Tests
 
             string[] requiredLayoutNames =
             {
-                "Library Floor",
+                "Library Floor Artwork",
                 "Library Wall Top",
                 "Library Wall Bottom Left",
                 "Library Wall Bottom Right",
@@ -71,7 +71,12 @@ namespace RPG.Tests
                 AssertBlocking(Find(scene, blockingName));
             }
 
-            AssertNoComponents<WorldItem>(scene);
+            AssertExpectedHiddenWorldItems(scene,
+                "Library Fragment 1",
+                "Library Fragment 2",
+                "Library Fragment 3",
+                "Library Glue Bottle",
+                "Complete Library Page");
             AssertNoComponents<ThrowableChair>(scene);
             AssertNoComponents<FlowerpotBreakable>(scene);
             AssertNoComponents<ClassroomLibraryCardPuzzle>(scene);
@@ -91,11 +96,12 @@ namespace RPG.Tests
                 "Decorative Door 1");
             AssertSpawn(corridor, "CorridorFromLibrary", new Vector2(27f, 1.1f),
                 new Vector3(29f, 0f, -10f));
-            AssertDecorativeDoorUnchanged(corridor, "Decorative Door 2", 31f);
-            AssertDecorativeDoorUnchanged(corridor, "Decorative Door 3", 35f);
+            AssertJanitorRestRoomDoor(corridor);
+            AssertDoor(corridor, "Storage Room Door", "SchoolStorageRoom", "StorageRoomFromCorridor");
 
             Scene library = EditorSceneManager.OpenScene(LibraryScenePath, OpenSceneMode.Single);
-            AssertDoor(library, "Library Exit Door", "SchoolCorridor", "CorridorFromLibrary");
+            AssertAutomaticTransition(library, "Library To Corridor Doorway",
+                new Vector2(60f, -5.8f), "SchoolCorridor", "CorridorFromLibrary");
             AssertSpawn(library, "LibraryFromCorridor", new Vector2(60f, -4.7f),
                 new Vector3(60f, 0f, -10f));
         }
@@ -158,16 +164,44 @@ namespace RPG.Tests
                 Is.EqualTo(cameraPosition), id);
         }
 
-        private static void AssertDecorativeDoorUnchanged(
-            Scene scene, string objectName, float expectedX)
+        private static void AssertAutomaticTransition(Scene scene, string rootName, Vector2 position,
+            string destinationScene, string destinationId)
         {
-            GameObject door = Find(scene, objectName);
-            Assert.That(door, Is.Not.Null, objectName);
-            Assert.That(door.transform.position, Is.EqualTo(new Vector3(expectedX, 2.5f, 0f)),
-                objectName);
-            Assert.That(door.GetComponent<SpriteRenderer>(), Is.Not.Null, objectName);
-            Assert.That(door.GetComponent<DoorController>(), Is.Null, objectName);
-            Assert.That(door.GetComponentInChildren<DoorExitPortal>(true), Is.Null, objectName);
+            GameObject root = Find(scene, rootName);
+            Assert.That(root, Is.Not.Null, rootName);
+            Assert.That((Vector2)root.transform.position, Is.EqualTo(position), rootName);
+            Assert.That(root.GetComponent<SpriteRenderer>(), Is.Null, rootName);
+            Assert.That(root.GetComponent<Collider2D>(), Is.Null, rootName);
+
+            MapTransitionPoint transition = root.GetComponent<MapTransitionPoint>();
+            Assert.That(transition, Is.Not.Null, rootName);
+            Assert.That(GetField<string>(transition, "destinationScene"), Is.EqualTo(destinationScene),
+                rootName);
+            Assert.That(GetField<string>(transition, "destinationId"), Is.EqualTo(destinationId), rootName);
+        }
+
+        private static void AssertJanitorRestRoomDoor(Scene scene)
+        {
+            const string doorName = "Janitor Rest Room Door";
+            GameObject door = Find(scene, doorName);
+            Assert.That(door, Is.Not.Null, doorName);
+            Assert.That(door.transform.position, Is.EqualTo(new Vector3(31f, 2.5f, 0f)), doorName);
+            Assert.That(door.GetComponent<JanitorRestRoomDoor>(), Is.Not.Null, doorName);
+            Assert.That(door.GetComponent<DoorController>(), Is.Null, doorName);
+            Assert.That(door.GetComponentInChildren<DoorExitPortal>(true), Is.Null, doorName);
+        }
+
+        private static void AssertExpectedHiddenWorldItems(Scene scene, params string[] itemNames)
+        {
+            WorldItem[] items = Object.FindObjectsOfType<WorldItem>(true)
+                .Where(item => item.gameObject.scene == scene)
+                .ToArray();
+
+            Assert.That(items.Select(item => item.name), Is.EquivalentTo(itemNames));
+            foreach (WorldItem item in items)
+            {
+                Assert.That(item.gameObject.activeSelf, Is.False, item.name);
+            }
         }
 
         private static void AssertNoComponents<T>(Scene scene) where T : Component

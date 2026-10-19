@@ -5,20 +5,8 @@ namespace RPG
 {
     public sealed class ClassroomDismissalSequence : MonoBehaviour
     {
-        private static readonly DialoguePage[] LecturePages =
-        {
-            new DialoguePage("教授", "所以同学们要明确，"),
-            new DialoguePage("教授", "恶魔是归墟侵蚀具象化的、充满攻击性的副产物。"),
-            new DialoguePage("教授", "恶魔猎人的任务，就是像清除癌细胞一样，\n将它们从地球的肌体上彻底清除。")
-        };
-        private static readonly DialoguePage[] DismissalPages =
-        {
-            new DialoguePage("教授", "下课铃响了，同学们下课吧。")
-        };
-
         private DialogueController dialogueController;
         private BroadcastDialogueTrigger openingBroadcast;
-        private DoorController door;
         private Transform professor;
         private readonly System.Collections.Generic.List<Transform> students =
             new System.Collections.Generic.List<Transform>();
@@ -27,7 +15,6 @@ namespace RPG
         {
             dialogueController = FindObjectOfType<DialogueController>();
             openingBroadcast = FindObjectOfType<BroadcastDialogueTrigger>();
-            door = FindObject("Door")?.GetComponent<DoorController>();
             professor = FindObject("Professor")?.transform;
             for (int index = 1; index <= 5; index++)
             {
@@ -35,31 +22,39 @@ namespace RPG
                 if (student != null) students.Add(student);
             }
 
-            if (dialogueController == null || openingBroadcast == null || door == null
-                || professor == null || students.Count != 5)
+            if (dialogueController == null || openingBroadcast == null
+                || professor == null || students.Count != 4)
             {
                 Debug.LogError("ClassroomDismissalSequence 缺少课堂离场对象。", this);
                 enabled = false;
                 return;
             }
 
-            dialogueController.StartDialogue(LecturePages, PlayDismissal);
+            openingBroadcast.SetPages(BuildAfterClassPages());
+            dialogueController.StartDialogue(BuildLecturePages(), PlayDismissal);
         }
 
         private void PlayDismissal()
         {
-            dialogueController.StartDialogue(DismissalPages, () => StartCoroutine(DismissClass()));
+            dialogueController.StartDialogue(BuildDismissalPages(), () => StartCoroutine(DismissClass()));
         }
 
         private IEnumerator DismissClass()
         {
-            EnsureDoorOpen();
             var departures = new System.Collections.Generic.List<Coroutine>();
             for (int index = 0; index < students.Count; index++)
                 departures.Add(StartCoroutine(MoveStudentOut(students[index], index * 0.35f)));
 
+            yield return new WaitForSeconds(0.2f);
+            bool studentDialogueFinished = false;
+            if (!dialogueController.StartDialogue(BuildStudentDismissalPages(), () => studentDialogueFinished = true))
+                studentDialogueFinished = true;
+
             foreach (Coroutine departure in departures)
                 yield return departure;
+
+            while (!studentDialogueFinished)
+                yield return null;
 
             yield return MoveAlongRoute(professor, new[]
             {
@@ -97,14 +92,6 @@ namespace RPG
             }
         }
 
-        private void EnsureDoorOpen()
-        {
-            if (door.State == DoorState.Closed)
-            {
-                door.ToggleDoor();
-            }
-        }
-
         private static GameObject FindObject(string name)
         {
             foreach (Transform item in FindObjectsOfType<Transform>(true))
@@ -113,6 +100,48 @@ namespace RPG
             }
 
             return null;
+        }
+
+        private static DialoguePage[] BuildLecturePages()
+        {
+            string professor = GameLocalization.Get("classroom.speaker.professor");
+            return new[]
+            {
+                new DialoguePage(professor, GameLocalization.Get("classroom.lecture.1")),
+                new DialoguePage(professor, GameLocalization.Get("classroom.lecture.2")),
+                new DialoguePage(professor, GameLocalization.Get("classroom.lecture.3"))
+            };
+        }
+
+        private static DialoguePage[] BuildDismissalPages()
+        {
+            return new[] { new DialoguePage(GameLocalization.Get("classroom.speaker.professor"),
+                GameLocalization.Get("classroom.dismissal.professor")) };
+        }
+
+        private static DialoguePage[] BuildStudentDismissalPages()
+        {
+            return new[]
+            {
+                new DialoguePage(GameLocalization.Get("classroom.speaker.student1"),
+                    GameLocalization.Get("classroom.dismissal.student1")),
+                new DialoguePage(GameLocalization.Get("classroom.speaker.student2"),
+                    GameLocalization.Get("classroom.dismissal.student2"))
+            };
+        }
+
+        private static DialoguePage[] BuildAfterClassPages()
+        {
+            return new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist1")),
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist2")),
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist3")),
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist4")),
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist5")),
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist6")),
+                new DialoguePage("主角", GameLocalization.Get("classroom.afterClass.protagonist7"))
+            };
         }
     }
 }

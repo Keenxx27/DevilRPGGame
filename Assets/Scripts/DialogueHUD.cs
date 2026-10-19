@@ -48,7 +48,7 @@ namespace RPG
                 return false;
             }
 
-            speakerText.text = speaker ?? string.Empty;
+            speakerText.text = PlayerChosenName.ResolveDialogueSpeaker(speaker ?? string.Empty);
             bodyText.text = visibleText ?? string.Empty;
             hintText.text = Hint;
             Color hintColor = hintText.color;
@@ -64,7 +64,7 @@ namespace RPG
                 return false;
             }
 
-            speakerText.text = speaker ?? string.Empty;
+            speakerText.text = PlayerChosenName.ResolveDialogueSpeaker(speaker ?? string.Empty);
             bodyText.text = text ?? string.Empty;
             hintText.text = string.Empty;
             panel.SetActive(true);

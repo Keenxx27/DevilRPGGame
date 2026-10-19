@@ -5946,6 +5946,7 @@ MonoBehaviour:
     text: "\u4E0D\u77E5\u9053\u6211\u7684\u501F\u4E66\u5361\u53BB\u54EA\u91CC\u4E86\uFF0C"
   - speaker: "\u4E3B\u89D2"
     text: "\u53EF\u80FD\u662F\u88AB\u54EA\u4E2A\u5BB6\u4F19\u85CF\u8D77\u6765\u4E86\u3002"
+  autoTrigger: 1
 --- !u!1 &2151000000
 GameObject:
   m_ObjectHideFlags: 0

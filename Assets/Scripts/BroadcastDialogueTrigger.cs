@@ -11,6 +11,11 @@ namespace RPG
         public bool HasTriggered { get; private set; }
         public event System.Action Completed;
 
+        public void SetPages(DialoguePage[] value)
+        {
+            pages = value;
+        }
+
         private void Start()
         {
             if (autoTrigger) Trigger();

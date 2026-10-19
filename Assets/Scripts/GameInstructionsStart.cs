@@ -56,12 +56,12 @@ namespace RPG
             backgroundRect.offsetMin = Vector2.zero;
             backgroundRect.offsetMax = Vector2.zero;
 
-            CreateText("Title", canvasObject.transform, "游戏操作",
+            CreateText("Title", canvasObject.transform, GameLocalization.Get("tutorial.title"),
                 46, new Vector2(0f, 195f), TextAnchor.MiddleCenter);
             CreateText("Instructions", canvasObject.transform,
-                "WASD——移动\nE——交互及拾取\nQ——丢弃及放置\nR——对话翻页\n空格——跳过对话\nEsc——暂停游戏",
+                GameLocalization.Get("tutorial.instructions"),
                 30, new Vector2(0f, -30f), TextAnchor.MiddleCenter);
-            CreateText("Start Hint", canvasObject.transform, "按E键开始游戏",
+            CreateText("Start Hint", canvasObject.transform, GameLocalization.Get("tutorial.startHint"),
                 24, new Vector2(0f, -350f), TextAnchor.MiddleCenter);
         }
 

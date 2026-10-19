@@ -50,11 +50,21 @@ namespace RPG
         private bool unlocked;
         private bool opened;
         [SerializeField] private GameObject openDrawer;
+        [SerializeField] private GameObject closedArtwork;
+        [SerializeField] private GameObject openArtwork;
 
         public void Configure(GameObject drawer)
         {
             openDrawer = drawer;
             if (openDrawer != null) openDrawer.SetActive(false);
+        }
+
+        public void ConfigureArtwork(GameObject closedStateArtwork, GameObject openStateArtwork)
+        {
+            closedArtwork = closedStateArtwork;
+            openArtwork = openStateArtwork;
+            if (closedArtwork != null) closedArtwork.SetActive(true);
+            if (openArtwork != null) openArtwork.SetActive(false);
         }
 
         public bool CanInvestigate(InvestigationKind kind)
@@ -96,6 +106,8 @@ namespace RPG
         {
             opened = true;
             if (openDrawer != null) openDrawer.SetActive(true);
+            if (closedArtwork != null) closedArtwork.SetActive(false);
+            if (openArtwork != null) openArtwork.SetActive(true);
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();
             if (renderer != null) renderer.color = new Color(.16f, .08f, .05f, 1f);
         }

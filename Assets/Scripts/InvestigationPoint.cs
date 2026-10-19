@@ -46,7 +46,10 @@ namespace RPG
         ProtagonistPlasterBoxes,
         SuburbanRoadTransition,
         RubbleSwitch,
-        RubbleLoreNote
+        RubbleLoreNote,
+        AbyssGlowingMoss,
+        AbyssWarmCrystal,
+        AbyssCavePassage
     }
 
     public interface IInvestigationHandler

@@ -7,78 +7,24 @@ namespace RPG
     public sealed class LibraryBookPuzzle : MonoBehaviour, IInvestigationHandler,
         ISelectedItemUseHandler
     {
-        private const string FragmentName = "残页碎片";
-        private const string BroomName = "扫帚";
-        private const string GlueName = "胶水";
-
-        private static readonly DialoguePage[] OpeningPages =
-        {
-            new DialoguePage("主角", "这里比我想象中更荒凉。\n书架积着灰，连管理员都不在。"),
-            new DialoguePage("主角", "电子检索只会给出被整理过的答案；\n真正难以归档的东西，往往躲在这些无人问津的角落。"),
-            new DialoguePage("主角", "脆弱的手稿、私印的游记、没有被官方档案收录的地方志异……\n如果有关于真实的恶魔的线索，也许就在这里。"),
-            new DialoguePage("主角", "先从书架开始找吧。")
-        };
-        private static readonly DialoguePage[] FirstBookcasePages =
-        {
-            new DialoguePage("主角", "这些古籍书名夸张，内容真伪难辨，但这正是我需要的——主流叙事之外的、残破的、带着人味的声音。")
-        };
-        private static readonly DialoguePage[] BookcasePagesOne =
-        {
-            new DialoguePage("主角", "某村樵夫坠入地穴，被发光蘑菇所救。")
-        };
-        private static readonly DialoguePage[] BookcasePagesTwo =
-        {
-            new DialoguePage("主角", "某族世代祭祀‘地母’，换取矿产丰饶。")
-        };
-        private static readonly DialoguePage[] BookcasePagesThree =
-        {
-            new DialoguePage("主角", "……暮年老叟言，其祖曾于矿道深处，遇一能言之石精。石精不害人，反指路避塌方。问其何所求，答曰：‘勿再深掘，惊我眠乡。’后矿竭，人散，地动亦息。"),
-            new DialoguePage("主角", "……果真是荒谬至极。\n等等，掉出了什么东西？")
-        };
-        private static readonly DialoguePage[] ChairPages =
-        {
-            new DialoguePage("主角", "椅子底下像是压着什么。\n先把它推开看看。")
-        };
-        private static readonly DialoguePage[] WallPages =
-        {
-            new DialoguePage("主角", "这块墙砖松得不太自然，里面似乎卡着什么。\n借书卡边缘够硬，也许能把它撬出来。")
-        };
-        private static readonly DialoguePage[] SecondFragmentPages =
-        {
-            new DialoguePage("主角", "拼起来似乎能显示出一段话，\n最好把它们放到一张桌子上摊开来看。")
-        };
-        private static readonly DialoguePage[] FragmentsPlacedPages =
-        {
-            new DialoguePage("主角", "还得拿点东西将它们粘起来。")
-        };
-        private static readonly DialoguePage[] CounterPages =
-        {
-            new DialoguePage("主角", "柜台底下有一瓶胶水。\n可我的手够不到它。"),
-            new DialoguePage("主角", "得找个长一点的东西，\n把它勾出来。")
-        };
-        private static readonly DialoguePage[] BroomPages =
-        {
-            new DialoguePage("主角", "扫帚够得着。\n得慢慢把它勾出来。")
-        };
-        private static readonly DialoguePage[] GluePages =
-        {
-            new DialoguePage("主角", "终于是找到能把它们粘起来的东西了……")
-        };
-        private static readonly DialoguePage[] CompletedPagePages =
-        {
-            new DialoguePage("主角", "粘好了。\n（被归墟侵蚀的痕迹在微微发热，不是刺痛，\n而是一种温暖的、引导般的脉动。）"),
-            new DialoguePage("主角", "地母。石精。\n在更古老的记录里，恶魔似乎有过别的名字，\n不那么绝对，甚至带着一丝敬畏。"),
-            new DialoguePage("主角", "让我读读这残页上写着什么……"),
-            new DialoguePage("主角", "其形虽异，其求存之心同。\n（痕迹的灼热达到了顶点，不再是不适，\n而是一种清晰的、近乎共鸣的震颤。）"),
-            new DialoguePage("主角", "求存之心。\n我要自己去看看。\n不是透过报告，不是透过枪口。"),
-            new DialoguePage("主角", "去和它们……对话。\n先回家去吧。")
-        };
-        private static readonly DialoguePage[] RevisitCompletedPagePages =
-        {
-            new DialoguePage("主角", "让我读读这残页上写着什么……"),
-            new DialoguePage("主角", "其形虽异，其求存之心同。"),
-            new DialoguePage("主角", "我想我已经读过了，回家去吧。")
-        };
+        private const string FragmentItemId = "library.fragment";
+        private const string GlueItemId = "library.glue";
+        private const string LibraryCardItemId = "library.card";
+        private const string BroomItemId = "storage.broom";
+        private DialoguePage[] openingPages;
+        private DialoguePage[] firstBookcasePages;
+        private DialoguePage[] bookcasePagesOne;
+        private DialoguePage[] bookcasePagesTwo;
+        private DialoguePage[] bookcasePagesThree;
+        private DialoguePage[] chairPages;
+        private DialoguePage[] wallPages;
+        private DialoguePage[] secondFragmentPages;
+        private DialoguePage[] fragmentsPlacedPages;
+        private DialoguePage[] counterPages;
+        private DialoguePage[] broomPages;
+        private DialoguePage[] gluePages;
+        private DialoguePage[] completedPagePages;
+        private DialoguePage[] revisitCompletedPagePages;
 
         private DialogueController dialogueController;
         private PlayerInventory inventory;
@@ -113,6 +59,35 @@ namespace RPG
         public bool HasDiscoveredGlue => counterInvestigated;
         public bool HasReadCompletePage => pageCompleted;
 
+        private void Awake()
+        {
+            openingPages = new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("library.opening.1")),
+                new DialoguePage("主角", GameLocalization.Get("library.opening.2")),
+                new DialoguePage("主角", GameLocalization.Get("library.opening.3")),
+                new DialoguePage("主角", GameLocalization.Get("library.opening.4"))
+            };
+            firstBookcasePages = BuildPages("library.environment.bookcase.first");
+            bookcasePagesOne = BuildPages("library.environment.bookcase.1");
+            bookcasePagesTwo = BuildPages("library.environment.bookcase.2");
+            bookcasePagesThree = BuildPages("library.environment.bookcase.4.1",
+                "library.environment.bookcase.4.2");
+            chairPages = BuildPages("library.environment.chair");
+            wallPages = BuildPages("library.environment.wall");
+            secondFragmentPages = BuildPages("library.environment.fragments.second");
+            fragmentsPlacedPages = BuildPages("library.environment.table.fragmentsPlaced");
+            counterPages = BuildPages("library.environment.counter.1",
+                "library.environment.counter.2");
+            broomPages = BuildPages("library.environment.counter.broom");
+            gluePages = BuildPages("library.glue.1");
+            completedPagePages = BuildPages("library.completed.1", "library.completed.2",
+                "library.completed.3", "library.completed.4", "library.completed.5",
+                "library.completed.6", "library.completed.7");
+            revisitCompletedPagePages = BuildPages("library.completed.3", "library.completed.4",
+                "library.revisit.3");
+        }
+
         private void Start()
         {
             dialogueController = FindObjectOfType<DialogueController>();
@@ -135,8 +110,14 @@ namespace RPG
                 return;
             }
 
+            firstFragment.ConfigureLocalization(FragmentItemId, "library.item.fragment");
+            secondFragment.ConfigureLocalization(FragmentItemId, "library.item.fragment");
+            thirdFragment.ConfigureLocalization(FragmentItemId, "library.item.fragment");
+            glueBottle.ConfigureLocalization(GlueItemId, "library.item.glue");
+            completePage.ConfigureLocalization("library.completePage", "library.item.completePage");
+
             secondFragment.PickedUp += HandleSecondFragmentPickedUp;
-            if (!dialogueController.StartDialogue(OpeningPages, () => openingFinished = true))
+            if (!dialogueController.StartDialogue(openingPages, () => openingFinished = true))
             {
                 Debug.LogError("LibraryBookPuzzle 无法开始入馆独白。", this);
             }
@@ -162,13 +143,13 @@ namespace RPG
                     return bookcaseInvestigations == 4 && chairPushes < 3 && !chairMoving;
                 case InvestigationKind.LibraryWallBrick:
                     return bookcaseInvestigations == 4 && !wallOpened
-                        && (!wallPrompted || IsSelected("Library Card"));
+                        && (!wallPrompted || IsSelectedItemId(LibraryCardItemId));
                 case InvestigationKind.LibraryReadingTable:
                     return CanInvestigateReadingTable();
                 case InvestigationKind.LibraryCounter:
                     return !gluePulledOut && (!counterInvestigated
-                        || (IsSelected(BroomName) && !broomPrompted)
-                        || (IsSelected(BroomName) && gluePulls < 3 && !gluePulling));
+                        || (IsSelectedItemId(BroomItemId) && !broomPrompted)
+                        || (IsSelectedItemId(BroomItemId) && gluePulls < 3 && !gluePulling));
                 case InvestigationKind.LibraryCompletePage:
                     return pageCompleted;
                 default:
@@ -188,7 +169,7 @@ namespace RPG
                 case InvestigationKind.LibraryReadingTable: return TryInvestigateReadingTable();
                 case InvestigationKind.LibraryCounter: return TryInvestigateCounter();
                 case InvestigationKind.LibraryCompletePage:
-                    return dialogueController.StartDialogue(RevisitCompletedPagePages);
+                    return dialogueController.StartDialogue(revisitCompletedPagePages);
                 default: return false;
             }
         }
@@ -196,15 +177,15 @@ namespace RPG
         public bool TryUseSelectedItem(InvestigationKind kind)
         {
             return kind == InvestigationKind.LibraryReadingTable
-                && !placementFinished && IsSelected(FragmentName)
+                && !placementFinished && IsSelectedItemId(FragmentItemId)
                 && TryPlaceFragment();
         }
 
         private bool TryInvestigateBookcase()
         {
-            DialoguePage[] pages = bookcaseInvestigations == 0 ? FirstBookcasePages
-                : bookcaseInvestigations == 1 ? BookcasePagesOne
-                : bookcaseInvestigations == 2 ? BookcasePagesTwo : BookcasePagesThree;
+            DialoguePage[] pages = bookcaseInvestigations == 0 ? firstBookcasePages
+                : bookcaseInvestigations == 1 ? bookcasePagesOne
+                : bookcaseInvestigations == 2 ? bookcasePagesTwo : bookcasePagesThree;
             int investigation = bookcaseInvestigations;
             return dialogueController.StartDialogue(pages,
                 () => FinishBookcaseInvestigation(investigation));
@@ -223,7 +204,7 @@ namespace RPG
         {
             if (!chairPrompted)
             {
-                return dialogueController.StartDialogue(ChairPages, () =>
+                return dialogueController.StartDialogue(chairPages, () =>
                 {
                     chairPrompted = true;
                     ShowPushHint();
@@ -264,7 +245,7 @@ namespace RPG
         {
             if (!wallPrompted)
             {
-                return dialogueController.StartDialogue(WallPages, () => wallPrompted = true);
+                return dialogueController.StartDialogue(wallPages, () => wallPrompted = true);
             }
 
             wallOpened = true;
@@ -275,7 +256,7 @@ namespace RPG
 
         private bool TryPlaceFragment()
         {
-            if (!inventory.TryRemoveSelected(FragmentName, out WorldItem fragment)) return false;
+            if (!inventory.TryRemoveSelectedById(FragmentItemId, out WorldItem fragment)) return false;
 
             if (fragmentTable == null)
             {
@@ -300,7 +281,7 @@ namespace RPG
             if (placedFragments == 3 && !placementFinished)
             {
                 placementFinished = true;
-                dialogueController.StartDialogue(FragmentsPlacedPages);
+                dialogueController.StartDialogue(fragmentsPlacedPages);
             }
 
             return true;
@@ -332,8 +313,8 @@ namespace RPG
             }
 
             return canTakeFragment || (nearestTable == fragmentTable && !pageCompleted
-                && (!gluePrompted || glueApplications <= 3 || IsSelected(GlueName))
-                && (gluePrompted || IsSelected(GlueName)));
+                && (!gluePrompted || glueApplications <= 3 || IsSelectedItemId(GlueItemId))
+                && (gluePrompted || IsSelectedItemId(GlueItemId)));
         }
 
         private bool TryInvestigateReadingTable()
@@ -350,9 +331,9 @@ namespace RPG
 
             if (!gluePrompted)
             {
-                return dialogueController.StartDialogue(GluePages, () =>
+                return dialogueController.StartDialogue(gluePages, () =>
                 {
-                    inventory.TryRemoveSelected(GlueName, out _);
+                    inventory.TryRemoveSelectedById(GlueItemId, out _);
                     gluePrompted = true;
                     ShowGlueApplicationHint();
                 });
@@ -381,14 +362,14 @@ namespace RPG
 
             completePage.transform.position = fragmentTable.position;
             completePage.gameObject.SetActive(true);
-            dialogueController.StartDialogue(CompletedPagePages);
+            dialogueController.StartDialogue(completedPagePages);
         }
 
         private bool TryInvestigateCounter()
         {
             if (!counterInvestigated)
             {
-                return dialogueController.StartDialogue(CounterPages, () =>
+                return dialogueController.StartDialogue(counterPages, () =>
                 {
                     counterInvestigated = true;
                 });
@@ -396,7 +377,7 @@ namespace RPG
 
             if (!broomPrompted)
             {
-                return dialogueController.StartDialogue(BroomPages, () =>
+                return dialogueController.StartDialogue(broomPages, () =>
                 {
                     broomPrompted = true;
                     ShowGlueHint();
@@ -438,28 +419,38 @@ namespace RPG
 
         private void HandleSecondFragmentPickedUp(WorldItem pickedUp)
         {
-            if (pickedUp == secondFragment) dialogueController.StartDialogue(SecondFragmentPages);
+            if (pickedUp == secondFragment) dialogueController.StartDialogue(secondFragmentPages);
         }
 
         private void ShowPushHint()
         {
-            pushHint.Show("按 E 用力推开（" + chairPushes + "/3）");
+            pushHint.Show(GameLocalization.Format("library.hint.push", chairPushes));
         }
 
         private void ShowGlueHint()
         {
-            pushHint.Show("按 E 用扫帚勾取（" + gluePulls + "/3）");
+            pushHint.Show(GameLocalization.Format("library.hint.hook", gluePulls));
         }
 
         private void ShowGlueApplicationHint()
         {
-            pushHint.Show("按 E 涂抹胶水（" + glueApplications + "/3）");
+            pushHint.Show(GameLocalization.Format("library.hint.apply", glueApplications));
         }
 
-        private bool IsSelected(string displayName)
+        private bool IsSelectedItemId(string itemId)
         {
-            return inventory.SelectedItem != null
-                && inventory.SelectedItem.DisplayName == displayName;
+            return inventory.SelectedItem != null && inventory.SelectedItem.ItemId == itemId;
+        }
+
+        private static DialoguePage[] BuildPages(params string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
 
         private WorldItem FindItem(string name)

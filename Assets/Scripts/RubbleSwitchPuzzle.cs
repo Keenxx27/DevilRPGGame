@@ -9,6 +9,8 @@ namespace RPG
         [SerializeField] private Collider2D ironGateCollider;
         [SerializeField] private SpriteRenderer ironGateRenderer;
         [SerializeField] private RubbleSwitch[] switches;
+        [SerializeField] private GameObject closedGateArtwork;
+        [SerializeField] private GameObject openGateArtwork;
 
         public void Configure(Collider2D gateCollider, SpriteRenderer gateRenderer,
             RubbleSwitch[] puzzleSwitches)
@@ -23,6 +25,13 @@ namespace RPG
             }
         }
 
+        public void ConfigureArtwork(GameObject closedArtwork, GameObject openArtwork)
+        {
+            closedGateArtwork = closedArtwork;
+            openGateArtwork = openArtwork;
+            SetGateArtwork(gatePermanentlyOpen);
+        }
+
         private void Start()
         {
             if (gatePermanentlyOpen) OpenGate();
@@ -32,11 +41,13 @@ namespace RPG
         {
             if (puzzleSwitch == null || puzzleSwitch.IsActivated) return false;
             puzzleSwitch.SetActivated(true);
+            UiAudio.PlaySwitchPressed();
             GetComponent<RubbleBossEncounter>()?.RefreshProgress();
             if (AllSwitchesActivated())
             {
                 gatePermanentlyOpen = true;
                 OpenGate();
+                UiAudio.PlayIronGateOpen();
                 GetComponent<RubbleBossEncounter>()?.CompleteBattle();
             }
 
@@ -51,6 +62,7 @@ namespace RPG
                 ? ironGateCollider.GetComponent<MapTransitionPoint>() : null;
             if (exit != null) exit.enabled = false;
             if (ironGateRenderer != null) ironGateRenderer.color = new Color(.34f, .2f, .12f, 1f);
+            SetGateArtwork(false);
             if (switches == null) return;
             foreach (RubbleSwitch puzzleSwitch in switches)
             {
@@ -91,11 +103,18 @@ namespace RPG
                 ? ironGateCollider.GetComponent<MapTransitionPoint>() : null;
             if (exit != null) exit.enabled = true;
             if (ironGateRenderer != null) ironGateRenderer.color = new Color(.34f, .2f, .12f, .5f);
+            SetGateArtwork(true);
             if (switches == null) return;
             foreach (RubbleSwitch puzzleSwitch in switches)
             {
                 if (puzzleSwitch != null) puzzleSwitch.SetActivated(true);
             }
+        }
+
+        private void SetGateArtwork(bool isOpen)
+        {
+            if (closedGateArtwork != null) closedGateArtwork.SetActive(!isOpen);
+            if (openGateArtwork != null) openGateArtwork.SetActive(isOpen);
         }
     }
 
@@ -104,6 +123,8 @@ namespace RPG
         [SerializeField] private RubbleSwitchPuzzle puzzle;
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private bool activated;
+        [SerializeField] private GameObject idleArtwork;
+        [SerializeField] private GameObject pressedArtwork;
 
         public bool IsActivated => activated;
 
@@ -117,6 +138,13 @@ namespace RPG
         public void SetPuzzle(RubbleSwitchPuzzle owner)
         {
             puzzle = owner;
+        }
+
+        public void ConfigureArtwork(GameObject idleStateArtwork, GameObject pressedStateArtwork)
+        {
+            idleArtwork = idleStateArtwork;
+            pressedArtwork = pressedStateArtwork;
+            ApplyArtworkState();
         }
 
         public bool CanInvestigate(InvestigationKind kind)
@@ -140,6 +168,13 @@ namespace RPG
                     ? new Color(.32f, .92f, .45f, 1f)
                     : new Color(.82f, .32f, .12f, 1f);
             }
+            ApplyArtworkState();
+        }
+
+        private void ApplyArtworkState()
+        {
+            if (idleArtwork != null) idleArtwork.SetActive(!activated);
+            if (pressedArtwork != null) pressedArtwork.SetActive(activated);
         }
     }
 }

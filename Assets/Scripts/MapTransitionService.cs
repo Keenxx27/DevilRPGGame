@@ -9,6 +9,7 @@ namespace RPG
     public class MapTransitionService : MonoBehaviour
     {
         private const string ApartmentEntranceFromSchoolId = "ApartmentEntranceFromSchool";
+        public static event Action<Transform> PlayerArrivedAtDestination;
         private Rigidbody2D playerBody;
         private bool isTransitioning;
         private bool schoolInventoryCleared;
@@ -84,6 +85,7 @@ namespace RPG
                 schoolInventoryCleared = true;
             }
             DoorExitPortal.SuppressPortalsAtDestination(playerBody);
+            PlayerArrivedAtDestination?.Invoke(transform);
             isTransitioning = false;
         }
 

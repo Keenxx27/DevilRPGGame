@@ -7,12 +7,12 @@ namespace RPG
     {
         private static readonly DialoguePage[] EncounterPages =
         {
-            new DialoguePage("主角", "那里有什么东西在动。"),
-            new DialoguePage("主角", "是一只……恶魔。大约小型犬大小，看上去受伤了。"),
+            new DialoguePage("主角", "那里有什么东西。"),
+            new DialoguePage("主角", "是一只……恶魔。"),
             new DialoguePage("主角", "它看起来不像新闻里那些狰狞的怪物。\n更像一只走错地方的、古怪的蜥蜴。"),
-            new DialoguePage("主角", "等等，那是……丧家犬的人？带着电棍？"),
             new DialoguePage("主角", "……"),
-            new DialoguePage("主角", "它死了。"),
+            new DialoguePage("主角", "可它已经死了。"),
+            new DialoguePage("主角", "看来是旁边的电棍造成的。"),
             new DialoguePage("主角", "（左脸的痕迹传来一阵细微的、冰凉的悸动，\n仿佛在共鸣某种遥远的痛苦。）"),
             new DialoguePage("丧家犬老大", "在这儿干什么呢你？没看到我正在进货吗？"),
             new DialoguePage("主角", "没……没什么。"),

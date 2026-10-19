@@ -32,6 +32,30 @@ namespace RPG
 
         public ClassroomPuzzleState State { get; private set; }
 
+        private void Awake()
+        {
+            if (libraryCard != null)
+            {
+                libraryCard.ConfigureLocalization("library.card", "library.item.card");
+            }
+            searchIntroPages = BuildPages("classroom.card.searchIntro");
+            storageCabinetPages = BuildPages("classroom.card.storageCabinet");
+            podiumPages = BuildPages("classroom.card.podium");
+            teacherDeskPages = BuildPages("classroom.card.teacherDesk");
+            blackboardPages = BuildPages("classroom.card.blackboard");
+            firstFlowerpotPages = BuildPages(
+                "classroom.card.flowerpot.first.1",
+                "classroom.card.flowerpot.first.2",
+                "classroom.card.flowerpot.first.3",
+                "classroom.card.flowerpot.first.4",
+                "classroom.card.flowerpot.first.5",
+                "classroom.card.flowerpot.first.6",
+                "classroom.card.flowerpot.first.7");
+            repeatFlowerpotPages = BuildPages("classroom.card.flowerpot.repeat");
+            flowerpotBrokenPages = BuildPages("classroom.card.flowerpot.broken");
+            cardPickedUpPages = BuildPages("classroom.card.pickup");
+        }
+
         private void OnEnable()
         {
             if (openingBroadcast == null)
@@ -215,6 +239,17 @@ namespace RPG
                 default:
                     return null;
             }
+        }
+
+        private static DialoguePage[] BuildPages(params string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
     }
 }

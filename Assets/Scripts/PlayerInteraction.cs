@@ -82,7 +82,7 @@ namespace RPG
                     return true;
                 }
 
-                investigation.TryInvestigate();
+                if (investigation.TryInvestigate()) UiAudio.PlayInvestigate();
                 return true;
             }
 

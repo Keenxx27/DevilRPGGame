@@ -177,6 +177,8 @@ namespace RPG
 
         private void SetSceneActorsActive(bool active)
         {
+            ThirteenFollower persistentCompanion = ThirteenFollower.PersistentCompanion;
+            if (persistentCompanion != null) thirteen = persistentCompanion.gameObject;
             if (linChunbao != null) linChunbao.SetActive(active);
             if (officialOne != null) officialOne.SetActive(active);
             if (officialTwo != null) officialTwo.SetActive(active);

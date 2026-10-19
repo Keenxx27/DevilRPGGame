@@ -19,14 +19,19 @@ namespace RPG
         private static readonly int RunUpHash = Animator.StringToHash("Player_Up_Run");
         private static readonly int IdleRightHash = Animator.StringToHash("Player_Idle_Right");
         private static readonly int RunRightHash = Animator.StringToHash("Player_Right_Run");
+        private static readonly int IdleLeftHash = Animator.StringToHash("Player_Idle_Left");
+        private static readonly int RunLeftHash = Animator.StringToHash("Player_Left_Run");
 
         public Vector2 FacingDirection { get; private set; } = Vector2.down;
 
         private void Awake()
         {
+            if (GetComponent<FootstepAudio>() == null) gameObject.AddComponent<FootstepAudio>();
             body = GetComponent<Rigidbody2D>();
             animator = GetComponentInChildren<Animator>();
-            characterRenderer = GetComponentInChildren<SpriteRenderer>();
+            characterRenderer = animator != null
+                ? animator.GetComponent<SpriteRenderer>()
+                : GetComponentInChildren<SpriteRenderer>();
         }
 
         private void Update()
@@ -51,25 +56,31 @@ namespace RPG
         {
             bool isMoving = input.sqrMagnitude > 0.01f;
             Vector2 direction = isMoving ? input : FacingDirection;
-            int animationHash;
+            CharacterAnimationState state = ResolveAnimation(direction, isMoving);
+            characterRenderer.flipX = state.FlipX;
+            PlayAnimation(state.Hash);
+        }
 
+        public static CharacterAnimationState ResolveAnimation(Vector2 direction, bool isMoving)
+        {
             if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
             {
-                characterRenderer.flipX = direction.x < 0f;
-                animationHash = isMoving ? RunRightHash : IdleRightHash;
-            }
-            else if (direction.y > 0f)
-            {
-                characterRenderer.flipX = false;
-                animationHash = isMoving ? RunUpHash : IdleUpHash;
-            }
-            else
-            {
-                characterRenderer.flipX = false;
-                animationHash = isMoving ? RunDownHash : IdleDownHash;
+                return direction.x < 0f
+                    ? new CharacterAnimationState(
+                        isMoving ? RunLeftHash : IdleLeftHash,
+                        isMoving ? "Player_Left_Run" : "Player_Idle_Left", false)
+                    : new CharacterAnimationState(
+                        isMoving ? RunRightHash : IdleRightHash,
+                        isMoving ? "Player_Right_Run" : "Player_Idle_Right", false);
             }
 
-            PlayAnimation(animationHash);
+            return direction.y > 0f
+                ? new CharacterAnimationState(
+                    isMoving ? RunUpHash : IdleUpHash,
+                    isMoving ? "Player_Up_Run" : "Player_Idle_Up", false)
+                : new CharacterAnimationState(
+                    isMoving ? RunDownHash : IdleDownHash,
+                    isMoving ? "Player_Down_Run" : "Player_Idle_Down", false);
         }
 
         private void PlayAnimation(int animationHash)
@@ -98,5 +109,19 @@ namespace RPG
 
             return current.sqrMagnitude > 0f ? current.normalized : Vector2.down;
         }
+    }
+
+    public readonly struct CharacterAnimationState
+    {
+        public CharacterAnimationState(int hash, string name, bool flipX)
+        {
+            Hash = hash;
+            Name = name;
+            FlipX = flipX;
+        }
+
+        public int Hash { get; }
+        public string Name { get; }
+        public bool FlipX { get; }
     }
 }
