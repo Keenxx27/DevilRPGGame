@@ -15,85 +15,18 @@ namespace RPG
             Reconsideration
         }
 
-        private static readonly DialoguePage[] KitchenPages =
-        {
-            new DialoguePage("主角", "高手？"),
-            new DialoguePage("林春宝", "那是。搏击社的训练包括手腕稳定性和空间感，\n懂不懂？这算应用练习。")
-        };
+        private static DialoguePage PlayerPage(string key) =>
+            new DialoguePage("主角", GameLocalization.Get(key));
 
-        private static readonly DialoguePage[][] ResponsePages =
-        {
-            new[] { new DialoguePage("林春宝", "挺好。") },
-            new[] { new DialoguePage("林春宝", "那行，就在洗手间药柜里。") },
-            new[] { new DialoguePage("林春宝", "你什么时候变成这样了？") }
-        };
+        private static DialoguePage LinPage(string key) =>
+            new DialoguePage(GameLocalization.Get("apartment.speaker.linChunbao"), GameLocalization.Get(key));
 
-        private static readonly string[] Answers =
+        private static string[] Texts(params string[] keys)
         {
-            "1. 天热，闷。",
-            "2. 确实忘记了，等会能帮我拿一个吗？",
-            "3. 这不关你的事。"
-        };
-
-        private static readonly DialoguePage[] DiningTablePages =
-        {
-            new DialoguePage("林春宝", "反正家里就我，看着看着也习惯了。\n说起来——"),
-            new DialoguePage("主角", "嗯？"),
-            new DialoguePage("林春宝", "下午路过郊区，听说又有个小归墟开了，\n指甲盖那么大。猎魔机构的人去了，\n封了三条街，吵死了。"),
-            new DialoguePage("主角", "然后呢？"),
-            new DialoguePage("林春宝", "还能然后？老一套呗。\n清场，开枪，广播叫大家别慌。"),
-            new DialoguePage("主角", "……"),
-            new DialoguePage("林春宝", "我跟你说，社长我今天教了新招，\n侧身闪接低扫腿，配合呼吸节奏，\n发力点特别——"),
-            new DialoguePage("主角", "……")
-        };
-
-        private static readonly string[] AppearanceAnswers =
-        {
-            "1. 是的",
-            "2. 没有"
-        };
-
-        private static readonly DialoguePage[][] AppearanceResponsePages =
-        {
-            new[] { new DialoguePage("林春宝", "我就说嘛，有什么心事说给我听听！") },
-            new[] { new DialoguePage("林春宝", "有。每次你露出这种‘全世界都错了就我对’的表情，\n就是你脸上这玩意最红的时候。\n现在它就在发亮。") }
-        };
-
-        private static readonly DialoguePage[] DemonBeliefPages =
-        {
-            new DialoguePage("主角", "……我只是觉得，他们从来不去想，\n有没有别的可能性。"),
-            new DialoguePage("林春宝", "恶魔哎，大哥。"),
-            new DialoguePage("林春宝", "它们从归墟地洞里爬出来，见人就扑，\n资料片里都播了无数遍了。能有什么可能性？\n难道请它们喝茶？"),
-            new DialoguePage("主角", "资料片也是人拍的。也许……\n它们只是不知道该怎么和我们打招呼。"),
-            new DialoguePage("林春宝", "（重重靠回椅背大笑起来）"),
-            new DialoguePage("林春宝", "完了，我哥读书读傻了。"),
-            new DialoguePage("林春宝", "……"),
-            new DialoguePage("林春宝", "你要不要重新考虑考虑？")
-        };
-
-        private static readonly string[] ReconsiderationAnswers =
-        {
-            "1. 我是认真的",
-            "2. 你说的对"
-        };
-
-        private static readonly DialoguePage[][] ReconsiderationResponsePages =
-        {
-            new[]
-            {
-                new DialoguePage("林春宝", "听着，不管你怎么想，外面的人可不会陪你发呆。\n真有哪天哪个不长眼的恶魔找你麻烦——"),
-                new DialoguePage("林春宝", "有岔子，交给我。"),
-                new DialoguePage("主角", "这样看来，我也不该耽搁了，\n我现在就去郊区。"),
-                new DialoguePage("林春宝", "行啊。不过我建议你从食品柜里拿点东西带上，\n万一有必要吸引它们呢。")
-            },
-            new[]
-            {
-                new DialoguePage("林春宝", "好吧，看来我哥脑子本质上还是正常的。"),
-                new DialoguePage("林春宝", "也许不过是被那帮坏同学欺负后的气话罢了，\n对吗？"),
-                new DialoguePage("主角", "……"),
-                new DialoguePage("林春宝", "得了，好好吃晚餐吧。")
-            }
-        };
+            string[] values = new string[keys.Length];
+            for (int index = 0; index < keys.Length; index++) values[index] = GameLocalization.Get(keys[index]);
+            return values;
+        }
 
         private bool hasStarted;
         private bool isChoosing;
@@ -132,12 +65,19 @@ namespace RPG
                 return;
             }
 
-            hasStarted = dialogue.StartDialogue(KitchenPages, BeginChoice);
+            hasStarted = dialogue.StartDialogue(new[]
+            {
+                PlayerPage("apartment.kitchen.encounter.1"),
+                LinPage("apartment.kitchen.encounter.2")
+            }, BeginChoice);
         }
 
         private void BeginChoice()
         {
-            BeginLockedChoice(ChoiceStage.Appearance, "今天没贴那个丑兮兮的胶布？", Answers);
+            BeginLockedChoice(ChoiceStage.Appearance,
+                GameLocalization.Get("apartment.kitchen.appearance.question"),
+                Texts("apartment.kitchen.appearance.answer.1", "apartment.kitchen.appearance.answer.2",
+                    "apartment.kitchen.appearance.answer.3"));
         }
 
         private void HandleChoiceInput()
@@ -177,15 +117,25 @@ namespace RPG
 
             if (choiceStage == ChoiceStage.Appearance)
             {
-                dialogue.StartDialogue(ResponsePages[selectedAnswer], MoveToDiningTable);
+                dialogue.StartDialogue(new[] { LinPage("apartment.kitchen.appearance.response." + (selectedAnswer + 1)) }, MoveToDiningTable);
             }
             else if (choiceStage == ChoiceStage.DemonBelief)
             {
-                dialogue.StartDialogue(AppearanceResponsePages[selectedAnswer], StartDemonBeliefDialogue);
+                dialogue.StartDialogue(new[] { LinPage("apartment.kitchen.concern.response." + (selectedAnswer + 1)) }, StartDemonBeliefDialogue);
             }
             else if (choiceStage == ChoiceStage.Reconsideration)
             {
-                DialoguePage[] response = ReconsiderationResponsePages[selectedAnswer];
+                DialoguePage[] response = selectedAnswer == 0
+                    ? new[]
+                    {
+                        LinPage("apartment.kitchen.resolve.1"), LinPage("apartment.kitchen.resolve.2"),
+                        PlayerPage("apartment.kitchen.resolve.3"), LinPage("apartment.kitchen.resolve.4")
+                    }
+                    : new[]
+                    {
+                        LinPage("apartment.kitchen.dismissive.1"), LinPage("apartment.kitchen.dismissive.2"),
+                        PlayerPage("apartment.kitchen.dismissive.3"), LinPage("apartment.kitchen.dismissive.4")
+                    };
                 dialogue.StartDialogue(response, selectedAnswer == 0 ? (System.Action)ResumeAfterKitchenDialogue : ShowIndifferentEnding);
             }
 
@@ -196,7 +146,7 @@ namespace RPG
         {
             if (linChunbao == null || diningTable == null)
             {
-                FindObjectOfType<DialogueController>()?.StartDialogue(DiningTablePages);
+                FindObjectOfType<DialogueController>()?.StartDialogue(CreateDiningTablePages());
                 return;
             }
 
@@ -214,22 +164,32 @@ namespace RPG
             }
 
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            dialogue?.StartDialogue(DiningTablePages, BeginDemonBeliefChoice);
+            dialogue?.StartDialogue(CreateDiningTablePages(), BeginDemonBeliefChoice);
         }
 
         private void BeginDemonBeliefChoice()
         {
-            BeginLockedChoice(ChoiceStage.DemonBelief, "哥，你又在想奇怪的事。", AppearanceAnswers);
+            BeginLockedChoice(ChoiceStage.DemonBelief,
+                GameLocalization.Get("apartment.kitchen.concern.question"),
+                Texts("apartment.kitchen.concern.answer.1", "apartment.kitchen.concern.answer.2"));
         }
 
         private void StartDemonBeliefDialogue()
         {
-            FindObjectOfType<DialogueController>()?.StartDialogue(DemonBeliefPages, BeginReconsiderationChoice);
+            FindObjectOfType<DialogueController>()?.StartDialogue(new[]
+            {
+                PlayerPage("apartment.kitchen.belief.1"), LinPage("apartment.kitchen.belief.2"),
+                LinPage("apartment.kitchen.belief.3"), PlayerPage("apartment.kitchen.belief.4"),
+                LinPage("apartment.kitchen.belief.5"), LinPage("apartment.kitchen.belief.6"),
+                LinPage("apartment.kitchen.belief.7"), LinPage("apartment.kitchen.belief.8")
+            }, BeginReconsiderationChoice);
         }
 
         private void BeginReconsiderationChoice()
         {
-            BeginLockedChoice(ChoiceStage.Reconsideration, "你要不要重新考虑考虑？", ReconsiderationAnswers);
+            BeginLockedChoice(ChoiceStage.Reconsideration,
+                GameLocalization.Get("apartment.kitchen.reconsider.question"),
+                Texts("apartment.kitchen.reconsider.answer.1", "apartment.kitchen.reconsider.answer.2"));
         }
 
         private void ResumeAfterKitchenDialogue()
@@ -307,14 +267,21 @@ namespace RPG
             panelRect.offsetMin = Vector2.zero;
             panelRect.offsetMax = Vector2.zero;
 
-            CreateText("Ending Title", panel.transform, "结局：关我何事", 46,
-                Vector2.zero, TextAnchor.MiddleCenter, Color.white);
+            CreateText("Ending Title", panel.transform,
+                GameLocalization.Get("apartment.ending.indifferent.title"), 46,
+                new Vector2(0f, 150f), TextAnchor.MiddleCenter, Color.white);
+            Text description = CreateText("Ending Description", panel.transform,
+                string.Join("\n\n", Texts("apartment.ending.indifferent.1", "apartment.ending.indifferent.2",
+                    "apartment.ending.indifferent.3", "apartment.ending.indifferent.4")), 25,
+                new Vector2(0f, -35f), TextAnchor.MiddleCenter, Color.white);
+            description.rectTransform.sizeDelta = new Vector2(1050f, 330f);
         }
 
         private void BeginLockedChoice(ChoiceStage stage, string question, string[] answers)
         {
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            if (dialogue == null || !dialogue.BeginLockedChoiceDialogue("林春宝", question)) return;
+            if (dialogue == null || !dialogue.BeginLockedChoiceDialogue(
+                    GameLocalization.Get("apartment.speaker.linChunbao"), question)) return;
 
             choiceStage = stage;
             activeAnswers = answers;
@@ -347,7 +314,7 @@ namespace RPG
             choiceCanvas.AddComponent<GraphicRaycaster>();
 
             CreateText("Choice Tutorial", choiceCanvas.transform,
-                "通过按下数字键选择答复，按下E键确认答复", 22,
+                GameLocalization.Get("apartment.ui.choiceTutorial"), 22,
                 new Vector2(0f, 210f), TextAnchor.MiddleCenter, Color.white);
 
             choicePanel = new GameObject("Choice Panel");
@@ -358,7 +325,7 @@ namespace RPG
             panelRect.sizeDelta = new Vector2(760f, 180f);
             panelRect.anchoredPosition = new Vector2(0f, 5f);
 
-            answerTexts = new Text[Answers.Length];
+            answerTexts = new Text[3];
             for (int index = 0; index < answerTexts.Length; index++)
             {
                 answerTexts[index] = CreateText("Answer " + (index + 1), choicePanel.transform,
@@ -410,6 +377,17 @@ namespace RPG
                     ? new Color(1f, .85f, .1f, 1f)
                     : Color.white;
             }
+        }
+
+        private static DialoguePage[] CreateDiningTablePages()
+        {
+            return new[]
+            {
+                LinPage("apartment.kitchen.table.1"), PlayerPage("apartment.kitchen.table.2"),
+                LinPage("apartment.kitchen.table.3"), PlayerPage("apartment.kitchen.table.4"),
+                LinPage("apartment.kitchen.table.5"), PlayerPage("apartment.kitchen.table.6"),
+                LinPage("apartment.kitchen.table.7"), PlayerPage("apartment.kitchen.table.8")
+            };
         }
     }
 }

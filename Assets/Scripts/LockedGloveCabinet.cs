@@ -6,27 +6,16 @@ namespace RPG
         ISelectedItemUseHandler
     {
         private const string KnifeName = "菜刀";
-        private static readonly DialoguePage[] IntroductionPages =
-        {
-            new DialoguePage("林春宝", "我才想起来，拳击手套放在这里头。"),
-            new DialoguePage("主角", "看上去柜门铰链生锈了开不了啊。"),
-            new DialoguePage("林春宝", "那就让它开得了！")
-        };
-        private static readonly DialoguePage[] RepeatPages =
-        {
-            new DialoguePage("主角", "柜门的铰链锈死了，得找东西撬开。")
-        };
-        private static readonly DialoguePage[] OpenPages =
-        {
-            new DialoguePage("主角", "菜刀正好能撬开这扇柜门。"),
-            new DialoguePage("主角", "拳击手套在里面。")
-        };
-
         [SerializeField] private WorldItem boxingGloves;
         [SerializeField] private SpriteRenderer cabinetArtworkRenderer;
         [SerializeField] private Sprite openArtwork;
         private bool introduced;
         private bool opened;
+
+        private void Awake()
+        {
+            boxingGloves?.ConfigureLocalization("apartment.boxingGloves", "apartment.item.boxingGloves");
+        }
 
         public bool CanInvestigate(InvestigationKind kind)
         {
@@ -38,8 +27,15 @@ namespace RPG
         public bool TryInvestigate(InvestigationKind kind)
         {
             if (!CanInvestigate(kind)) return false;
-            if (!FindObjectOfType<DialogueController>().StartDialogue(
-                    introduced ? RepeatPages : IntroductionPages)) return false;
+            DialoguePage[] pages = introduced
+                ? new[] { PlayerPage("apartment.livingRoom.gloveCabinet.repeat") }
+                : new[]
+                {
+                    LinPage("apartment.livingRoom.gloveCabinet.intro.1"),
+                    PlayerPage("apartment.livingRoom.gloveCabinet.intro.2"),
+                    LinPage("apartment.livingRoom.gloveCabinet.intro.3")
+                };
+            if (!FindObjectOfType<DialogueController>().StartDialogue(pages)) return false;
             introduced = true;
             return true;
         }
@@ -51,7 +47,12 @@ namespace RPG
             if (inventory?.SelectedItem == null || inventory.SelectedItem.DisplayName != KnifeName) return false;
 
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            if (dialogue == null || dialogue.IsPlaying || !dialogue.StartDialogue(OpenPages, OpenCabinet))
+            DialoguePage[] pages =
+            {
+                PlayerPage("apartment.livingRoom.gloveCabinet.open.1"),
+                PlayerPage("apartment.livingRoom.gloveCabinet.open.2")
+            };
+            if (dialogue == null || dialogue.IsPlaying || !dialogue.StartDialogue(pages, OpenCabinet))
             {
                 return false;
             }
@@ -67,5 +68,11 @@ namespace RPG
                 cabinetArtworkRenderer.sprite = openArtwork;
             }
         }
+
+        private static DialoguePage PlayerPage(string key) =>
+            new DialoguePage("主角", GameLocalization.Get(key));
+
+        private static DialoguePage LinPage(string key) =>
+            new DialoguePage(GameLocalization.Get("apartment.speaker.linChunbao"), GameLocalization.Get(key));
     }
 }

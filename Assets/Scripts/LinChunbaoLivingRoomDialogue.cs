@@ -7,37 +7,11 @@ namespace RPG
     {
         private const string StickyKnifeName = "粘竿菜刀";
         private const string BedsideKeySpriteResourcePath = "bedside-table-key-pixel-v1";
-        private static readonly DialoguePage[] FirstPages =
-        {
-            new DialoguePage("林春宝", "在家里找找看，也许能有解开密码的线索。")
-        };
+        private static DialoguePage PlayerPage(string key) =>
+            new DialoguePage("主角", GameLocalization.Get(key));
 
-        private static readonly DialoguePage[] RepeatPages =
-        {
-            new DialoguePage("林春宝", "看我干嘛，我怎么知道密码？")
-        };
-        private static readonly DialoguePage[] DepartureRepeatPages =
-        {
-            new DialoguePage("林春宝", "你还磨蹭什么？我还要补沙袋呢！")
-        };
-        private static readonly DialoguePage[] PhoneRewardPages =
-        {
-            new DialoguePage("林春宝", "哥，你居然把我手机里那关小游戏打过去了？\n我卡了好几天呢。"),
-            new DialoguePage("主角", "只是躲开几块障碍而已。\n你把这种东西当训练？"),
-            new DialoguePage("林春宝", "当然，练反应和手眼协调。\n对了，我刚在你床头柜旁边找到这个。"),
-            new DialoguePage("林春宝", "估计是你翻东西时掉的。拿好，\n别又把钥匙和膏药混在一起。"),
-            new DialoguePage("主角", "……谢谢。")
-        };
-        private static readonly DialoguePage[] RepairSandbagPages =
-        {
-            new DialoguePage("林春宝", "你是把那胶布贴到了菜刀上？"),
-            new DialoguePage("主角", "也许这膏药能派上用场……"),
-            new DialoguePage("林春宝", "就它了！要是用针线缝缝补补的要花掉我一整晚。"),
-            new DialoguePage("主角", "所以……"),
-            new DialoguePage("林春宝", "嗯？"),
-            new DialoguePage("主角", "我能去你的房间里找线索了吗？"),
-            new DialoguePage("林春宝", "随便你，去吧！")
-        };
+        private static DialoguePage LinPage(string key) =>
+            new DialoguePage(GameLocalization.Get("apartment.speaker.linChunbao"), GameLocalization.Get(key));
 
         private bool isAtSofa;
         private bool hasBeenInvestigated;
@@ -69,15 +43,17 @@ namespace RPG
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             if (LinChunbaoPhone.GameCompleted && !hasGivenBedsideKey)
             {
-                return dialogue.StartDialogue(PhoneRewardPages, GiveBedsideKey);
+                return dialogue.StartDialogue(CreatePhoneRewardPages(), GiveBedsideKey);
             }
 
             if (departureConversationComplete)
             {
-                return dialogue.StartDialogue(DepartureRepeatPages);
+                return dialogue.StartDialogue(new[] { LinPage("apartment.livingRoom.lin.departureRepeat") });
             }
 
-            DialoguePage[] pages = hasBeenInvestigated ? RepeatPages : FirstPages;
+            DialoguePage[] pages = { LinPage(hasBeenInvestigated
+                ? "apartment.livingRoom.lin.repeat"
+                : "apartment.livingRoom.lin.first") };
             if (!dialogue.StartDialogue(pages)) return false;
             hasBeenInvestigated = true;
             return true;
@@ -96,7 +72,7 @@ namespace RPG
             }
 
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            if (!dialogue.StartDialogue(RepairSandbagPages, GrantBedroomAccess)) return false;
+            if (!dialogue.StartDialogue(CreateRepairSandbagPages(), GrantBedroomAccess)) return false;
             inventory.TryRemoveSelected(StickyKnifeName, out _);
             return true;
         }
@@ -104,6 +80,27 @@ namespace RPG
         private static void GrantBedroomAccess()
         {
             FindObjectOfType<LinChunbaoBedroomDoor>()?.GrantAccess();
+        }
+
+        private static DialoguePage[] CreatePhoneRewardPages()
+        {
+            return new[]
+            {
+                LinPage("apartment.livingRoom.phoneReward.1"), PlayerPage("apartment.livingRoom.phoneReward.2"),
+                LinPage("apartment.livingRoom.phoneReward.3"), LinPage("apartment.livingRoom.phoneReward.4"),
+                PlayerPage("apartment.livingRoom.phoneReward.5")
+            };
+        }
+
+        private static DialoguePage[] CreateRepairSandbagPages()
+        {
+            return new[]
+            {
+                LinPage("apartment.livingRoom.repair.1"), PlayerPage("apartment.livingRoom.repair.2"),
+                LinPage("apartment.livingRoom.repair.3"), PlayerPage("apartment.livingRoom.repair.4"),
+                LinPage("apartment.livingRoom.repair.5"), PlayerPage("apartment.livingRoom.repair.6"),
+                LinPage("apartment.livingRoom.repair.7")
+            };
         }
 
         private void GiveBedsideKey()

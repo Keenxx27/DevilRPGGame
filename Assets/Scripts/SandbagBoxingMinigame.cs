@@ -140,7 +140,7 @@ namespace RPG
                 pendingKeys[index] = pendingKeys[swap];
                 pendingKeys[swap] = value;
             }
-            stageText.text = "拳击训练  第 " + (stageIndex + 1) + " / 3 阶段";
+            stageText.text = GameLocalization.Format("apartment.ui.boxing.stage", stageIndex + 1);
             RefreshTargetLabels();
             SpawnNextKey();
             spawnTimer = SpawnIntervals[stageIndex];

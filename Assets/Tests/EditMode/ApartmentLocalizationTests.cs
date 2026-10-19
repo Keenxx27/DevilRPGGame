@@ -5,6 +5,13 @@ namespace RPG.Tests
 {
     public class ApartmentLocalizationTests
     {
+        [TearDown]
+        public void TearDown()
+        {
+            UnityEngine.PlayerPrefs.DeleteKey(GameLocalization.PreferenceKey);
+            GameLocalization.Reload();
+        }
+
         [Test]
         public void ApartmentTranslations_AllKeysContainThreeNonEmptyValues()
         {
@@ -94,6 +101,66 @@ namespace RPG.Tests
                 "Who am I even talking to...?\nNever mind. I should head to the kitchen.",
                 "僕はいったい誰に話しかけているんだ……\nまあいい。先に台所へ行こう。"
             }));
+        }
+
+        [Test]
+        public void Batch2_UsesUserApprovedDialogueCorrections()
+        {
+            Dictionary<string, string[]> texts = ApartmentLocalizationTexts.Create();
+
+            Assert.That(texts["apartment.kitchen.table.3"][1], Does.Contain("small hole of Abyss"));
+            Assert.That(texts["apartment.kitchen.table.3"][2], Does.Contain("小さな深淵の穴"));
+            Assert.That(texts["apartment.kitchen.table.7"][2], Does.Contain("部長の俺"));
+            Assert.That(texts["apartment.kitchen.belief.6"][1],
+                Is.EqualTo("Well, all that studying has scrambled up your brain."));
+            Assert.That(texts["apartment.kitchen.belief.6"][2],
+                Is.EqualTo("あーあ、兄ちゃん、勉強しすぎて頭がこんがらがっちまったな。"));
+        }
+
+        [Test]
+        public void Batch2_UsesApprovedIndifferentEnding()
+        {
+            Dictionary<string, string[]> texts = ApartmentLocalizationTexts.Create();
+
+            Assert.That(texts["apartment.ending.indifferent.title"], Is.EqualTo(new[]
+            {
+                "结局：关我何事", "Ending: None of My Concern", "結末：僕には関係ない"
+            }));
+            Assert.That(texts["apartment.ending.indifferent.4"], Is.EqualTo(new[]
+            {
+                "永远找不到归属。", "Never finding a place to belong.", "永遠に、居場所を見つけられないまま。"
+            }));
+        }
+
+        [Test]
+        public void Batch2_FormatsBoxingStageForEveryLanguage()
+        {
+            GameLocalization.SetLanguage(GameLanguage.SimplifiedChinese);
+            Assert.That(GameLocalization.Format("apartment.ui.boxing.stage", 2),
+                Is.EqualTo("拳击训练　第 2 / 3 阶段"));
+            GameLocalization.SetLanguage(GameLanguage.English);
+            Assert.That(GameLocalization.Format("apartment.ui.boxing.stage", 2),
+                Is.EqualTo("Boxing Training  Stage 2 / 3"));
+            GameLocalization.SetLanguage(GameLanguage.Japanese);
+            Assert.That(GameLocalization.Format("apartment.ui.boxing.stage", 2),
+                Is.EqualTo("ボクシング訓練　第 2 / 3 段階"));
+        }
+
+        [Test]
+        public void Batch2_BoxingGlovesUseLocalizedNameWithoutChangingItemId()
+        {
+            GameLocalization.SetLanguage(GameLanguage.English);
+            var gameObject = new UnityEngine.GameObject("Boxing Gloves Test");
+            gameObject.AddComponent<UnityEngine.SpriteRenderer>();
+            gameObject.AddComponent<UnityEngine.BoxCollider2D>();
+            WorldItem item = gameObject.AddComponent<WorldItem>();
+            item.Configure("拳击手套", true);
+            item.ConfigureLocalization("apartment.boxingGloves", "apartment.item.boxingGloves");
+
+            Assert.That(item.ItemId, Is.EqualTo("apartment.boxingGloves"));
+            Assert.That(item.DisplayName, Is.EqualTo("Boxing Gloves"));
+
+            UnityEngine.Object.DestroyImmediate(gameObject);
         }
     }
 }
