@@ -16,7 +16,7 @@ namespace RPG
 
         private static GameLanguage currentLanguage = LoadLanguage();
 
-        private static readonly Dictionary<string, string[]> Texts = new Dictionary<string, string[]>
+        private static readonly Dictionary<string, string[]> CoreTexts = new Dictionary<string, string[]>
         {
             { "language.title", new[] { "请选择语言", "Select Language", "言語を選択" } },
             { "language.hint", new[]
@@ -142,6 +142,8 @@ namespace RPG
             { "library.item.card", new[] { "借书卡", "Library Card", "図書カード" } }
         };
 
+        private static readonly Dictionary<string, string[]> Texts = CreateTexts();
+
         public static GameLanguage CurrentLanguage => currentLanguage;
 
         public static void SetLanguage(GameLanguage language)
@@ -170,6 +172,17 @@ namespace RPG
         public static string Format(string key, params object[] values)
         {
             return string.Format(Get(key), values);
+        }
+
+        private static Dictionary<string, string[]> CreateTexts()
+        {
+            var texts = new Dictionary<string, string[]>(CoreTexts);
+            foreach (KeyValuePair<string, string[]> pair in ApartmentLocalizationTexts.Create())
+            {
+                texts.Add(pair.Key, pair.Value);
+            }
+
+            return texts;
         }
 
         private static GameLanguage LoadLanguage()
