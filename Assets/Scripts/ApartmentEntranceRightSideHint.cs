@@ -4,10 +4,13 @@ namespace RPG
 {
     public sealed class ApartmentEntranceRightSideHint : MonoBehaviour
     {
-        private static readonly DialoguePage[] Pages =
+        private static DialoguePage[] CreatePages()
         {
-            new DialoguePage("主角", "这边不是通往郊区的路，我正后方的路才是。")
-        };
+            return new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("apartment.entrance.wrongWay"))
+            };
+        }
 
         private bool isInRightSide;
 
@@ -23,7 +26,7 @@ namespace RPG
 
             if (!isInRightSide && !dialogue.IsPlaying)
             {
-                isInRightSide = dialogue.StartDialogue(Pages);
+                isInRightSide = dialogue.StartDialogue(CreatePages());
             }
         }
     }

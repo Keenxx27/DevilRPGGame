@@ -5,11 +5,14 @@ namespace RPG
 {
     public sealed class ApartmentEntranceIntro : MonoBehaviour
     {
-        private static readonly DialoguePage[] Pages =
+        private static DialoguePage[] CreatePages()
         {
-            new DialoguePage("主角", "（侵蚀痕迹的灼热尚未消退。）\n不知是从何时起养成了这种自言自语的行为……\n可能从小便是这样。"),
-            new DialoguePage("主角", "啊，公寓楼就在前面。\n虽说老旧，但也是个家。")
-        };
+            return new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("apartment.entrance.intro.1")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.entrance.intro.2"))
+            };
+        }
 
         private IEnumerator Start()
         {
@@ -17,7 +20,7 @@ namespace RPG
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             if (dialogue != null)
             {
-                dialogue.StartDialogue(Pages);
+                dialogue.StartDialogue(CreatePages());
             }
         }
     }

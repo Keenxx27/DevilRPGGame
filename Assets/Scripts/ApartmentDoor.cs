@@ -4,11 +4,14 @@ namespace RPG
 {
     public sealed class ApartmentDoor : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] Pages =
+        private static DialoguePage[] CreatePages()
         {
-            new DialoguePage("主角", "我妹妹林春宝这个时候大概已经放学在家里等着我了吧。\n……真不知道这句话是对谁说的……\n好像我们这个家真会来客人一样。"),
-            new DialoguePage("主角", "……没有人愿意跟一个半人半恶魔的家伙说话，除了她。\n因为我是她哥哥。")
-        };
+            return new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("apartment.entrance.door.1")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.entrance.door.2"))
+            };
+        }
 
         private DialogueController dialogueController;
         [SerializeField] private DoorController door;
@@ -36,7 +39,7 @@ namespace RPG
 
         public bool TryInvestigate(InvestigationKind kind)
         {
-            return CanInvestigate(kind) && dialogueController.StartDialogue(Pages, ConfirmEntry);
+            return CanInvestigate(kind) && dialogueController.StartDialogue(CreatePages(), ConfirmEntry);
         }
 
         private void ConfirmEntry()
