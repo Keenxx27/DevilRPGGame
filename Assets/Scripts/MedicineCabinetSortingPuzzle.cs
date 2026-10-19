@@ -33,6 +33,11 @@ namespace RPG
 
         [SerializeField] private WorldItem plaster;
 
+        private void Awake()
+        {
+            plaster?.ConfigureLocalization("apartment.plaster", "apartment.item.plaster");
+        }
+
         public bool Show(PlayerInteraction player)
         {
             if (isVisible || completed || player == null) return false;
@@ -142,8 +147,9 @@ namespace RPG
             panelRect.anchorMax = new Vector2(.5f, .5f);
             panelRect.sizeDelta = new Vector2(840f, 470f);
 
-            CreateText("Title", panel.transform, "药柜", 34, new Vector2(0f, 190f), Color.white);
-            CreateText("Hint", panel.transform, "E 选中药品    WASD 与相邻药品交换    归位的药品无法移动", 18,
+            CreateText("Title", panel.transform, GameLocalization.Get("apartment.ui.medicineCabinet.title"),
+                34, new Vector2(0f, 190f), Color.white);
+            CreateText("Hint", panel.transform, GameLocalization.Get("apartment.ui.medicineCabinet.hint"), 18,
                 new Vector2(0f, -192f), new Color(.92f, .92f, .92f, 1f));
 
             medicineImages = new Image[8];

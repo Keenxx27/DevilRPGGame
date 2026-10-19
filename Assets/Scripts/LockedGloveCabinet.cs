@@ -5,7 +5,7 @@ namespace RPG
     public sealed class LockedGloveCabinet : MonoBehaviour, IInvestigationHandler,
         ISelectedItemUseHandler
     {
-        private const string KnifeName = "菜刀";
+        private const string KnifeId = "apartment.knife";
         [SerializeField] private WorldItem boxingGloves;
         [SerializeField] private SpriteRenderer cabinetArtworkRenderer;
         [SerializeField] private Sprite openArtwork;
@@ -44,7 +44,7 @@ namespace RPG
         {
             if (kind != InvestigationKind.LivingRoomLowCabinet || !introduced || opened) return false;
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
-            if (inventory?.SelectedItem == null || inventory.SelectedItem.DisplayName != KnifeName) return false;
+            if (inventory?.SelectedItem == null || inventory.SelectedItem.ItemId != KnifeId) return false;
 
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             DialoguePage[] pages =

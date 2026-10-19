@@ -4,7 +4,7 @@ namespace RPG
 {
     public sealed class ApartmentDepartureDialogue : MonoBehaviour
     {
-        private const string DriedMeatName = "肉干";
+        private const string DriedMeatId = "apartment.driedMeat";
         private static readonly DialoguePage[] Pages =
         {
             new DialoguePage("林春宝", "你准备好了？"),
@@ -26,7 +26,7 @@ namespace RPG
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
             LinChunbaoLivingRoomDialogue linChunbao = FindObjectOfType<LinChunbaoLivingRoomDialogue>();
             if (dialogue == null || inventory == null || linChunbao == null || dialogue.IsPlaying
-                || !linChunbao.IsAtSofa || !inventory.HasItem(DriedMeatName)) return;
+                || !linChunbao.IsAtSofa || !inventory.HasItemById(DriedMeatId)) return;
 
             Vector2 position = dialogue.transform.position;
             if (position.x < 132f || position.x > 148f || position.y < -5f || position.y > 5f)

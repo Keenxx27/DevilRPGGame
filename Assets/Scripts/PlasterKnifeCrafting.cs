@@ -5,15 +5,10 @@ namespace RPG
     [RequireComponent(typeof(PlayerInventory))]
     public sealed class PlasterKnifeCrafting : MonoBehaviour
     {
-        private const string PlasterName = "膏药";
-        private const string KnifeName = "菜刀";
-        private const string StickyKnifeName = "粘竿菜刀";
+        private const string PlasterId = "apartment.plaster";
+        private const string KnifeId = "apartment.knife";
+        private const string StickyKnifeId = "apartment.stickyKnife";
         private const string StickyKnifeSpriteResourcePath = "sticky-pole-knife-pixel-v1";
-        private static readonly DialoguePage[] CraftPages =
-        {
-            new DialoguePage("主角", "兴许我能把这平时拿来遮挡的膏药贴在钝刀上，做成一个特别奇怪的粘竿。")
-        };
-
         private PlayerInventory inventory;
         private DialogueController dialogue;
         private bool crafting;
@@ -28,15 +23,18 @@ namespace RPG
         private void Update()
         {
             if (crafted || crafting || inventory == null || dialogue == null || dialogue.IsPlaying
-                || !inventory.HasItem(PlasterName) || !inventory.HasItem(KnifeName)) return;
+                || !inventory.HasItemById(PlasterId) || !inventory.HasItemById(KnifeId)) return;
 
-            crafting = dialogue.StartDialogue(CraftPages, CraftStickyKnife);
+            crafting = dialogue.StartDialogue(new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("apartment.crafting.stickyKnife"))
+            }, CraftStickyKnife);
         }
 
         private void CraftStickyKnife()
         {
-            if (!inventory.TryRemoveFirst(PlasterName, out WorldItem plaster)
-                || !inventory.TryRemoveFirst(KnifeName, out WorldItem knife))
+            if (!inventory.TryRemoveFirstById(PlasterId, out WorldItem plaster)
+                || !inventory.TryRemoveFirstById(KnifeId, out WorldItem knife))
             {
                 crafting = false;
                 return;
@@ -52,7 +50,7 @@ namespace RPG
             BoxCollider2D collider = itemObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             WorldItem stickyKnife = itemObject.AddComponent<WorldItem>();
-            stickyKnife.Configure(StickyKnifeName, true);
+            stickyKnife.ConfigureLocalization(StickyKnifeId, "apartment.item.stickyKnife");
             inventory.TryStore(stickyKnife);
             crafted = true;
             crafting = false;

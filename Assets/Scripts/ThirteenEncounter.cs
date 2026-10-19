@@ -6,7 +6,7 @@ namespace RPG
 {
     public sealed class ThirteenEncounter : MonoBehaviour
     {
-        private const string DriedMeatName = "肉干";
+        private const string DriedMeatId = "apartment.driedMeat";
 
         private static readonly DialoguePage[] DiscoveryPages =
         {
@@ -71,7 +71,7 @@ namespace RPG
                 return false;
             }
 
-            if (!inventory.TryRemoveSelected(DriedMeatName, out WorldItem meat)) return false;
+            if (!inventory.TryRemoveSelectedById(DriedMeatId, out WorldItem meat)) return false;
             meat.Drop(offeringPosition);
             meat.SetPickupEnabled(false);
             awaitingOffer = false;

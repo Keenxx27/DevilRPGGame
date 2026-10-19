@@ -162,5 +162,38 @@ namespace RPG.Tests
 
             UnityEngine.Object.DestroyImmediate(gameObject);
         }
+
+        [Test]
+        public void Batch3_UsesApprovedVentCorrection()
+        {
+            Assert.That(GameLocalization.Get("apartment.bathroom.vent.observe", GameLanguage.SimplifiedChinese),
+                Is.EqualTo("从这里看去，下水道里贴着一张纸像是写着什么数字，也许和密码锁有关。"));
+            Assert.That(GameLocalization.Get("apartment.bathroom.vent.observe", GameLanguage.English),
+                Is.EqualTo("From here, I can see a piece of paper stuck inside the sewer. It looks like there's some kind of number written on it—maybe it has something to do with the combination lock."));
+            Assert.That(GameLocalization.Get("apartment.bathroom.vent.observe", GameLanguage.Japanese),
+                Is.EqualTo("ここから見ると、下水道の中に紙が貼りついていて、何か数字が書かれているようだ。ダイヤル錠と関係があるのかもしれない。"));
+        }
+
+        [TestCase("apartment.knife", "apartment.item.knife", "Kitchen Knife", "包丁")]
+        [TestCase("apartment.driedMeat", "apartment.item.driedMeat", "Dried Meat", "干し肉")]
+        [TestCase("apartment.medicineCabinetKey", "apartment.item.medicineCabinetKey", "Medicine Cabinet Key", "薬棚の鍵")]
+        [TestCase("apartment.plaster", "apartment.item.plaster", "Plaster", "膏薬")]
+        [TestCase("apartment.stickyKnife", "apartment.item.stickyKnife", "Sticky-Pole Knife", "粘着竿包丁")]
+        public void Batch3_ItemsUseLocalizedNamesWithStableIds(
+            string itemId, string nameKey, string english, string japanese)
+        {
+            var gameObject = new UnityEngine.GameObject("Apartment Item Test");
+            WorldItem item = gameObject.AddComponent<WorldItem>();
+            item.ConfigureLocalization(itemId, nameKey);
+
+            GameLocalization.SetLanguage(GameLanguage.English);
+            Assert.That(item.ItemId, Is.EqualTo(itemId));
+            Assert.That(item.DisplayName, Is.EqualTo(english));
+            GameLocalization.SetLanguage(GameLanguage.Japanese);
+            Assert.That(item.ItemId, Is.EqualTo(itemId));
+            Assert.That(item.DisplayName, Is.EqualTo(japanese));
+
+            UnityEngine.Object.DestroyImmediate(gameObject);
+        }
     }
 }

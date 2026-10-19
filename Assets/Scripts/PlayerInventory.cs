@@ -106,6 +106,22 @@ namespace RPG
             return false;
         }
 
+        public bool TryRemoveFirstById(string itemId, out WorldItem item)
+        {
+            for (int index = 0; index < slots.Capacity; index++)
+            {
+                WorldItem candidate = slots.Get(index);
+                if (candidate != null && candidate.ItemId == itemId)
+                {
+                    item = slots.Remove(index);
+                    return true;
+                }
+            }
+
+            item = null;
+            return false;
+        }
+
         public bool TryRemoveSelected(string displayName, out WorldItem item)
         {
             WorldItem selected = SelectedItem;

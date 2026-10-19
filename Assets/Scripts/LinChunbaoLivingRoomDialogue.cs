@@ -5,7 +5,7 @@ namespace RPG
     public sealed class LinChunbaoLivingRoomDialogue : MonoBehaviour, IInvestigationHandler,
         ISelectedItemUseHandler
     {
-        private const string StickyKnifeName = "粘竿菜刀";
+        private const string StickyKnifeId = "apartment.stickyKnife";
         private const string BedsideKeySpriteResourcePath = "bedside-table-key-pixel-v1";
         private static DialoguePage PlayerPage(string key) =>
             new DialoguePage("主角", GameLocalization.Get(key));
@@ -66,14 +66,14 @@ namespace RPG
             if (boxing == null || !boxing.IsBroken) return false;
 
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
-            if (inventory?.SelectedItem == null || inventory.SelectedItem.DisplayName != StickyKnifeName)
+            if (inventory?.SelectedItem == null || inventory.SelectedItem.ItemId != StickyKnifeId)
             {
                 return false;
             }
 
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             if (!dialogue.StartDialogue(CreateRepairSandbagPages(), GrantBedroomAccess)) return false;
-            inventory.TryRemoveSelected(StickyKnifeName, out _);
+            inventory.TryRemoveSelectedById(StickyKnifeId, out _);
             return true;
         }
 

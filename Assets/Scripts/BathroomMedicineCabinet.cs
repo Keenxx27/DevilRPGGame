@@ -5,17 +5,7 @@ namespace RPG
     public sealed class BathroomMedicineCabinet : MonoBehaviour, IInvestigationHandler,
         ISelectedItemUseHandler
     {
-        private const string KeyName = "药柜钥匙";
-        private static readonly DialoguePage[] FirstPages =
-        {
-            new DialoguePage("主角", "药柜被锁住了……"),
-            new DialoguePage("主角", "看来还是房东干的，我每天都要从里面拿膏药出来贴在脸上，不可能把它锁住的。"),
-            new DialoguePage("主角", "话说回来……钥匙去哪里了？")
-        };
-        private static readonly DialoguePage[] RepeatPages =
-        {
-            new DialoguePage("主角", "现在的当务之急是找到药柜的钥匙。")
-        };
+        private const string KeyId = "apartment.medicineCabinetKey";
 
         private bool introduced;
         private bool unlocked;
@@ -32,7 +22,18 @@ namespace RPG
         {
             if (!CanInvestigate(kind)) return false;
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            if (!dialogue.StartDialogue(introduced ? RepeatPages : FirstPages)) return false;
+            string[] keys = introduced
+                ? new[] { "apartment.bathroom.medicineCabinet.repeat" }
+                : new[]
+                {
+                    "apartment.bathroom.medicineCabinet.intro.1",
+                    "apartment.bathroom.medicineCabinet.intro.2",
+                    "apartment.bathroom.medicineCabinet.intro.3"
+                };
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            if (!dialogue.StartDialogue(pages)) return false;
             introduced = true;
             return true;
         }
@@ -46,10 +47,10 @@ namespace RPG
 
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
             PlayerInteraction player = FindObjectOfType<PlayerInteraction>();
-            if (inventory?.SelectedItem == null || inventory.SelectedItem.DisplayName != KeyName
+            if (inventory?.SelectedItem == null || inventory.SelectedItem.ItemId != KeyId
                 || sortingPuzzle == null || !sortingPuzzle.Show(player)) return false;
 
-            inventory.TryRemoveSelected(KeyName, out _);
+            inventory.TryRemoveSelectedById(KeyId, out _);
 
             unlocked = true;
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();

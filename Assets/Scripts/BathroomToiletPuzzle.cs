@@ -4,30 +4,15 @@ namespace RPG
 {
     public sealed class BathroomToiletPuzzle : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] IntroductionPages =
-        {
-            new DialoguePage("主角", "也许我该往这里面看看……说不准会发现什么。"),
-            new DialoguePage("主角", "该怎么做呢？"),
-            new DialoguePage("主角", "例如说……冲马桶？")
-        };
-        private static readonly DialoguePage[] SecondFlushPages =
-        {
-            new DialoguePage("林春宝", "哥，你在冲马桶吗？"),
-            new DialoguePage("林春宝", "省着点用水，我可不想再打几次黑拳挣水费！")
-        };
-        private static readonly DialoguePage[] ThirdFlushPages =
-        {
-            new DialoguePage("林春宝", "你怕不是又把浴盐球掉进去了？")
-        };
-        private static readonly DialoguePage[] FourthFlushPages =
-        {
-            new DialoguePage("主角", "……这房东果真是个狠人。"),
-            new DialoguePage("主角", "而且也是个坏人。拿准了我因为脸上这道痕迹而不敢报警的把柄。")
-        };
-
         [SerializeField] private WorldItem medicineCabinetKey;
         private bool introduced;
         private int flushCount;
+
+        private void Awake()
+        {
+            medicineCabinetKey?.ConfigureLocalization("apartment.medicineCabinetKey",
+                "apartment.item.medicineCabinetKey");
+        }
 
         public bool CanInvestigate(InvestigationKind kind)
         {
@@ -41,7 +26,8 @@ namespace RPG
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             if (!introduced)
             {
-                if (!dialogue.StartDialogue(IntroductionPages)) return false;
+                if (!dialogue.StartDialogue(PlayerPages("apartment.bathroom.toilet.intro.1",
+                        "apartment.bathroom.toilet.intro.2", "apartment.bathroom.toilet.intro.3"))) return false;
                 introduced = true;
                 return true;
             }
@@ -52,11 +38,13 @@ namespace RPG
                 case 1:
                     return true;
                 case 2:
-                    return dialogue.StartDialogue(SecondFlushPages);
+                    return dialogue.StartDialogue(LinPages("apartment.bathroom.toilet.second.1",
+                        "apartment.bathroom.toilet.second.2"));
                 case 3:
-                    return dialogue.StartDialogue(ThirdFlushPages);
+                    return dialogue.StartDialogue(LinPages("apartment.bathroom.toilet.third"));
                 case 4:
-                    return dialogue.StartDialogue(FourthFlushPages, RevealKey);
+                    return dialogue.StartDialogue(PlayerPages("apartment.bathroom.toilet.fourth.1",
+                        "apartment.bathroom.toilet.fourth.2"), RevealKey);
                 default:
                     return true;
             }
@@ -65,6 +53,19 @@ namespace RPG
         private void RevealKey()
         {
             if (medicineCabinetKey != null) medicineCabinetKey.gameObject.SetActive(true);
+        }
+
+        private static DialoguePage[] PlayerPages(params string[] keys) => CreatePages("主角", keys);
+
+        private static DialoguePage[] LinPages(params string[] keys) =>
+            CreatePages(GameLocalization.Get("apartment.speaker.linChunbao"), keys);
+
+        private static DialoguePage[] CreatePages(string speaker, string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+                pages[index] = new DialoguePage(speaker, GameLocalization.Get(keys[index]));
+            return pages;
         }
     }
 }

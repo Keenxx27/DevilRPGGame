@@ -144,6 +144,21 @@ namespace RPG.Tests
             Assert.That(inventory.GetSlotItem(2), Is.Null);
         }
 
+        [Test]
+        public void TryRemoveFirstById_RemovesLocalizedItemWithoutUsingDisplayName()
+        {
+            PlayerInventory inventory = CreatePlayer();
+            WorldItem item = CreateItem("Knife", Vector2.zero);
+            item.Configure("菜刀", true);
+            item.ConfigureLocalization("apartment.knife", "apartment.item.knife");
+            inventory.RegisterNearby(item);
+            Assert.That(inventory.TryPickUpNearest(), Is.True);
+
+            Assert.That(inventory.TryRemoveFirstById("apartment.knife", out WorldItem removed), Is.True);
+            Assert.That(removed, Is.SameAs(item));
+            Assert.That(inventory.HasItemById("apartment.knife"), Is.False);
+        }
+
         private PlayerInventory CreatePlayer()
         {
             GameObject player = new GameObject("Player");

@@ -4,24 +4,6 @@ namespace RPG
 {
     public sealed class LockedFoodCabinet : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] FirstInvestigationPages =
-        {
-            new DialoguePage("林春宝", "话说这房东也真是个狠人。\n欠他三个月的租金，不停水，不停电……"),
-            new DialoguePage("林春宝", "居然把食品柜上了把锁！"),
-            new DialoguePage("林春宝", "还是密码锁！"),
-            new DialoguePage("主角", "这种情况不报警吗？"),
-            new DialoguePage("林春宝", "万一警察见到你直接呼叫恶魔猎人了呢？")
-        };
-        private static readonly DialoguePage[] OpenPages =
-        {
-            new DialoguePage("主角", "终于是把这食品柜打开了……"),
-            new DialoguePage("主角", "这袋肉干似乎是拿来吸引恶魔的不二之选，\n毕竟它们大部分都吃肉吧……")
-        };
-        private static readonly DialoguePage[] RepeatOpenPages =
-        {
-            new DialoguePage("主角", "我没必要带更多了。")
-        };
-
         private DialogueController dialogue;
         private bool hasBeenInvestigated;
         private bool unlocked;
@@ -32,11 +14,16 @@ namespace RPG
         public void Configure(WorldItem meat)
         {
             driedMeat = meat;
-            if (driedMeat != null) driedMeat.gameObject.SetActive(false);
+            if (driedMeat != null)
+            {
+                driedMeat.ConfigureLocalization("apartment.driedMeat", "apartment.item.driedMeat");
+                driedMeat.gameObject.SetActive(false);
+            }
         }
 
         private void Start()
         {
+            driedMeat?.ConfigureLocalization("apartment.driedMeat", "apartment.item.driedMeat");
             dialogue = FindObjectOfType<DialogueController>();
             passwordLock = GetComponent<FoodCabinetPasswordLock>();
             if (passwordLock == null) passwordLock = gameObject.AddComponent<FoodCabinetPasswordLock>();
@@ -51,15 +38,16 @@ namespace RPG
 
             if (unlocked)
             {
-                if (meatTaken) return dialogue.StartDialogue(RepeatOpenPages);
-                return dialogue.StartDialogue(OpenPages, GiveDriedMeat);
+                if (meatTaken) return dialogue.StartDialogue(PlayerPages("apartment.kitchen.foodCabinet.repeat"));
+                return dialogue.StartDialogue(PlayerPages("apartment.kitchen.foodCabinet.open.1",
+                    "apartment.kitchen.foodCabinet.open.2"), GiveDriedMeat);
             }
 
             if (hasBeenInvestigated)
             {
                 return passwordLock != null && passwordLock.Show(FindObjectOfType<PlayerInteraction>());
             }
-            if (!dialogue.StartDialogue(FirstInvestigationPages, NotifyFirstInvestigationComplete))
+            if (!dialogue.StartDialogue(CreateIntroductionPages(), NotifyFirstInvestigationComplete))
             {
                 return false;
             }
@@ -92,6 +80,27 @@ namespace RPG
             driedMeat.gameObject.SetActive(true);
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
             meatTaken = inventory != null && inventory.TryStore(driedMeat);
+        }
+
+        private static DialoguePage[] CreateIntroductionPages()
+        {
+            string lin = GameLocalization.Get("apartment.speaker.linChunbao");
+            return new[]
+            {
+                new DialoguePage(lin, GameLocalization.Get("apartment.kitchen.foodCabinet.intro.1")),
+                new DialoguePage(lin, GameLocalization.Get("apartment.kitchen.foodCabinet.intro.2")),
+                new DialoguePage(lin, GameLocalization.Get("apartment.kitchen.foodCabinet.intro.3")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.kitchen.foodCabinet.intro.4")),
+                new DialoguePage(lin, GameLocalization.Get("apartment.kitchen.foodCabinet.intro.5"))
+            };
+        }
+
+        private static DialoguePage[] PlayerPages(params string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            return pages;
         }
     }
 }

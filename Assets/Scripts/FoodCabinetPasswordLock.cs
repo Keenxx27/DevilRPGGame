@@ -101,8 +101,9 @@ namespace RPG
             panelRect.anchorMax = new Vector2(.5f, .5f);
             panelRect.sizeDelta = new Vector2(560f, 300f);
 
-            CreateText("Title", panel.transform, "食品柜密码锁", 31, new Vector2(0f, 95f), Color.black);
-            CreateText("Hint", panel.transform, "A / D 选择密码位    W / S 调整数值\nQ 退出", 19,
+            CreateText("Title", panel.transform, GameLocalization.Get("apartment.ui.foodCabinet.title"),
+                31, new Vector2(0f, 95f), Color.black);
+            CreateText("Hint", panel.transform, GameLocalization.Get("apartment.ui.foodCabinet.hint"), 19,
                 new Vector2(0f, -100f), new Color(.12f, .12f, .12f, 1f));
 
             digitTexts = new Text[4];

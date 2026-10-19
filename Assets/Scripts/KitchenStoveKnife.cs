@@ -4,13 +4,13 @@ namespace RPG
 {
     public sealed class KitchenStoveKnife : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] Pages =
-        {
-            new DialoguePage("主角", "灶台上有一把菜刀。\n也许能用来撬开生锈的铰链。")
-        };
-
         [SerializeField] private WorldItem knife;
         private bool exposed;
+
+        private void Awake()
+        {
+            knife?.ConfigureLocalization("apartment.knife", "apartment.item.knife");
+        }
 
         public bool CanInvestigate(InvestigationKind kind)
         {
@@ -23,7 +23,11 @@ namespace RPG
         {
             if (!CanInvestigate(kind)) return false;
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            if (!dialogue.StartDialogue(Pages, ExposeKnife)) return false;
+            DialoguePage[] pages =
+            {
+                new DialoguePage("主角", GameLocalization.Get("apartment.kitchen.stoveKnife"))
+            };
+            if (!dialogue.StartDialogue(pages, ExposeKnife)) return false;
             exposed = true;
             return true;
         }
