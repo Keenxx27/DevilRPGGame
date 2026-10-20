@@ -4,48 +4,45 @@ namespace RPG
 {
     public sealed class ProtagonistBedroomDialogue : MonoBehaviour, IInvestigationHandler
     {
-        private DialoguePage[] pages;
-        private InvestigationKind kind;
-
         public void Configure(InvestigationKind investigationKind, DialoguePage[] dialoguePages)
         {
-            kind = investigationKind;
-            pages = dialoguePages;
+            // 保留安装器兼容入口；运行时文本按调查类型和当前语言生成。
         }
 
         public bool CanInvestigate(InvestigationKind investigationKind)
         {
             DialogueController dialogue = FindObjectOfType<DialogueController>();
-            return investigationKind == kind && pages != null && pages.Length > 0
+            return IsSupported(investigationKind)
                 && dialogue != null && !dialogue.IsPlaying;
         }
 
         public bool TryInvestigate(InvestigationKind investigationKind)
         {
             return CanInvestigate(investigationKind)
-                && FindObjectOfType<DialogueController>().StartDialogue(pages);
+                && FindObjectOfType<DialogueController>().StartDialogue(CreatePages(investigationKind));
+        }
+
+        private static bool IsSupported(InvestigationKind investigationKind) =>
+            investigationKind == InvestigationKind.ProtagonistBedroomBed
+            || investigationKind == InvestigationKind.ProtagonistPlasterBoxes;
+
+        private static DialoguePage[] CreatePages(InvestigationKind investigationKind)
+        {
+            string prefix = investigationKind == InvestigationKind.ProtagonistBedroomBed
+                ? "apartment.protagonistBedroom.bed."
+                : "apartment.protagonistBedroom.plasterBoxes.";
+            int count = investigationKind == InvestigationKind.ProtagonistBedroomBed ? 2 : 5;
+            DialoguePage[] localizedPages = new DialoguePage[count];
+            for (int index = 0; index < count; index++)
+                localizedPages[index] = new DialoguePage("主角", GameLocalization.Get(prefix + (index + 1)));
+            return localizedPages;
         }
     }
 
     public sealed class ProtagonistBedsideTable : MonoBehaviour, IInvestigationHandler,
         IRightClickSelectedItemUseHandler
     {
-        private const string KeyName = "床头柜钥匙";
-        private static readonly DialoguePage[] LockedPages =
-        {
-            new DialoguePage("主角", "这是我的床头柜，衣服什么的都放在里面。"),
-            new DialoguePage("主角", "但是现在锁住了，钥匙我从昨天就一直在找。")
-        };
-        private static readonly DialoguePage[] HasKeyPages =
-        {
-            new DialoguePage("主角", "这是我的床头柜，衣服什么的都放在里面。"),
-            new DialoguePage("主角", "现在找到了钥匙，终于可以打开它了。")
-        };
-        private static readonly DialoguePage[] OpenPages =
-        {
-            new DialoguePage("主角", "……除了衣服外，床头柜里有一张上面写着数字7的纸条。"),
-            new DialoguePage("主角", "或许与密码锁有关。")
-        };
+        private const string KeyId = "apartment.bedsideKey";
 
         private bool unlocked;
         private bool opened;
@@ -80,12 +77,17 @@ namespace RPG
             if (unlocked)
             {
                 OpenDrawer();
-                return FindObjectOfType<DialogueController>().StartDialogue(OpenPages);
+                return FindObjectOfType<DialogueController>().StartDialogue(PlayerPages(
+                    "apartment.protagonistBedroom.bedside.open.1",
+                    "apartment.protagonistBedroom.bedside.open.2"));
             }
 
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
-            DialoguePage[] pages = inventory != null && inventory.HasItem(KeyName)
-                ? HasKeyPages : LockedPages;
+            DialoguePage[] pages = inventory != null && inventory.HasItemById(KeyId)
+                ? PlayerPages("apartment.protagonistBedroom.bedside.hasKey.1",
+                    "apartment.protagonistBedroom.bedside.hasKey.2")
+                : PlayerPages("apartment.protagonistBedroom.bedside.locked.1",
+                    "apartment.protagonistBedroom.bedside.locked.2");
             return FindObjectOfType<DialogueController>().StartDialogue(pages);
         }
 
@@ -93,9 +95,9 @@ namespace RPG
         {
             if (kind != InvestigationKind.ProtagonistBedsideTable || unlocked || !CanInvestigate(kind)) return false;
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
-            if (inventory?.SelectedItem == null || inventory.SelectedItem.DisplayName != KeyName) return false;
+            if (inventory?.SelectedItem == null || inventory.SelectedItem.ItemId != KeyId) return false;
 
-            if (!inventory.TryRemoveSelected(KeyName, out _)) return false;
+            if (!inventory.TryRemoveSelectedById(KeyId, out _)) return false;
             unlocked = true;
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();
             if (renderer != null) renderer.color = new Color(.19f, .1f, .06f, 1f);
@@ -110,6 +112,14 @@ namespace RPG
             if (openArtwork != null) openArtwork.SetActive(true);
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();
             if (renderer != null) renderer.color = new Color(.16f, .08f, .05f, 1f);
+        }
+
+        private static DialoguePage[] PlayerPages(params string[] keys)
+        {
+            DialoguePage[] localizedPages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+                localizedPages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            return localizedPages;
         }
     }
 }

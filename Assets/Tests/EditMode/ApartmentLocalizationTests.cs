@@ -195,5 +195,46 @@ namespace RPG.Tests
 
             UnityEngine.Object.DestroyImmediate(gameObject);
         }
+
+        [Test]
+        public void Batch4_UsesApprovedBedroomTranslations()
+        {
+            Dictionary<string, string[]> texts = ApartmentLocalizationTexts.Create();
+
+            Assert.That(texts["apartment.chunbaoBedroom.desk.1"], Is.EqualTo(new[]
+            {
+                "上面放着春宝小时候最喜欢的玩具，红熊可米。",
+                "On it is Chunbao's favorite childhood toy, Red Bear Comy.",
+                "上には、春宝が子供の頃に一番気に入っていたおもちゃ、「赤いクマのコミー」が置いてある。"
+            }));
+            Assert.That(texts["apartment.protagonistBedroom.plasterBoxes.5"], Is.EqualTo(new[]
+            {
+                "所以有没有人能告诉我我到底是什么！",
+                "Then can somebody tell me what I am?!",
+                "だったら誰か、僕がいったい何なのか教えてくれ！"
+            }));
+            Assert.That(texts["apartment.ui.phoneGame.title"], Is.EqualTo(new[]
+            {
+                "林春宝的手机游戏", "Lin Chunbao's Phone Game", "林春宝のスマホゲーム"
+            }));
+        }
+
+        [Test]
+        public void Batch4_BedsideKeyUsesLocalizedNameWithStableId()
+        {
+            var gameObject = new UnityEngine.GameObject("Bedside Key Test");
+            WorldItem item = gameObject.AddComponent<WorldItem>();
+            item.ConfigureLocalization("apartment.bedsideKey", "apartment.item.bedsideKey");
+
+            Assert.That(item.ItemId, Is.EqualTo("apartment.bedsideKey"));
+            Assert.That(GameLocalization.Get("apartment.item.bedsideKey", GameLanguage.SimplifiedChinese),
+                Is.EqualTo("床头柜钥匙"));
+            Assert.That(GameLocalization.Get("apartment.item.bedsideKey", GameLanguage.English),
+                Is.EqualTo("Nightstand Key"));
+            Assert.That(GameLocalization.Get("apartment.item.bedsideKey", GameLanguage.Japanese),
+                Is.EqualTo("ベッド脇の棚の鍵"));
+
+            UnityEngine.Object.DestroyImmediate(gameObject);
+        }
     }
 }

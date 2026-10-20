@@ -106,7 +106,7 @@ namespace RPG
         private void GiveBedsideKey()
         {
             PlayerInventory inventory = FindObjectOfType<PlayerInventory>();
-            if (inventory == null || inventory.HasItem("床头柜钥匙"))
+            if (inventory == null || inventory.HasItemById("apartment.bedsideKey"))
             {
                 hasGivenBedsideKey = true;
                 return;
@@ -125,7 +125,7 @@ namespace RPG
             BoxCollider2D collider = keyObject.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
             WorldItem key = keyObject.AddComponent<WorldItem>();
-            key.Configure("床头柜钥匙", true);
+            key.ConfigureLocalization("apartment.bedsideKey", "apartment.item.bedsideKey");
             hasGivenBedsideKey = inventory.TryStore(key);
             if (!hasGivenBedsideKey)
             {

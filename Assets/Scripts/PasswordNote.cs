@@ -4,12 +4,6 @@ namespace RPG
 {
     public sealed class PasswordNote : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] Pages =
-        {
-            new DialoguePage("主角", "……是一张上面写着数字6的纸条。"),
-            new DialoguePage("主角", "或许与密码锁有关。")
-        };
-
         public bool CanInvestigate(InvestigationKind kind)
         {
             DialogueController dialogue = FindObjectOfType<DialogueController>();
@@ -19,7 +13,13 @@ namespace RPG
         public bool TryInvestigate(InvestigationKind kind)
         {
             return CanInvestigate(kind)
-                && FindObjectOfType<DialogueController>().StartDialogue(Pages);
+                && FindObjectOfType<DialogueController>().StartDialogue(new[]
+                {
+                    new DialoguePage("主角", GameLocalization.Get(
+                        "apartment.protagonistBedroom.passwordNote.1")),
+                    new DialoguePage("主角", GameLocalization.Get(
+                        "apartment.protagonistBedroom.passwordNote.2"))
+                });
         }
     }
 }

@@ -5,20 +5,6 @@ namespace RPG
     [RequireComponent(typeof(DoorController))]
     public sealed class LinChunbaoBedroomDoor : MonoBehaviour, IDoorInteractionOverride
     {
-        private static readonly DialoguePage[] BeforeSandbagPages =
-        {
-            new DialoguePage("林春宝", "喂喂，做人可得讲点界限！"),
-            new DialoguePage("主角", "万一里边有密码锁相关的线索呢？"),
-            new DialoguePage("林春宝", "那是我的房间！要找线索也要我自己进去找。")
-        };
-        private static readonly DialoguePage[] AfterSandbagPages =
-        {
-            new DialoguePage("林春宝", "喂喂，做人可得讲点界限！"),
-            new DialoguePage("主角", "万一里边有密码锁相关的线索呢？"),
-            new DialoguePage("林春宝", "那是我的房间！要找线索……"),
-            new DialoguePage("林春宝", "至少得帮我修好这个沙袋才让你进去。")
-        };
-
         private DoorController door;
         private bool permissionGranted;
 
@@ -33,14 +19,34 @@ namespace RPG
             DialogueController dialogue = player != null ? player.GetComponent<DialogueController>() : null;
             if (dialogue == null || dialogue.IsPlaying) return false;
             SandbagBoxingMinigame boxing = FindObjectOfType<SandbagBoxingMinigame>();
-            return dialogue.StartDialogue(boxing != null && boxing.IsBroken
-                ? AfterSandbagPages
-                : BeforeSandbagPages);
+            return dialogue.StartDialogue(CreatePages(boxing != null && boxing.IsBroken));
         }
 
         public void GrantAccess()
         {
             permissionGranted = true;
+        }
+
+        private static DialoguePage[] CreatePages(bool sandbagBroken)
+        {
+            string lin = GameLocalization.Get("apartment.speaker.linChunbao");
+            if (!sandbagBroken)
+            {
+                return new[]
+                {
+                    new DialoguePage(lin, GameLocalization.Get("apartment.chunbaoBedroom.door.boundary")),
+                    new DialoguePage("主角", GameLocalization.Get("apartment.chunbaoBedroom.door.clueQuestion")),
+                    new DialoguePage(lin, GameLocalization.Get("apartment.chunbaoBedroom.door.beforeSandbag"))
+                };
+            }
+
+            return new[]
+            {
+                new DialoguePage(lin, GameLocalization.Get("apartment.chunbaoBedroom.door.boundary")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.chunbaoBedroom.door.clueQuestion")),
+                new DialoguePage(lin, GameLocalization.Get("apartment.chunbaoBedroom.door.afterSandbag.1")),
+                new DialoguePage(lin, GameLocalization.Get("apartment.chunbaoBedroom.door.afterSandbag.2"))
+            };
         }
     }
 }

@@ -6,23 +6,6 @@ namespace RPG
 {
     public sealed class LinChunbaoPhone : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] StartPages =
-        {
-            new DialoguePage("主角", "那么，就由我来通关这个游戏吧……")
-        };
-
-        private static readonly DialoguePage[] FirstPasswordPages =
-        {
-            new DialoguePage("主角", "这屏幕……怎么回事？"),
-            new DialoguePage("主角", "上面竟显示出一个数字1，难道是坏了？"),
-            new DialoguePage("主角", "还是……和密码锁有关？")
-        };
-
-        private static readonly DialoguePage[] RepeatPasswordPages =
-        {
-            new DialoguePage("主角", "上面有一个数字1，可能同密码锁有关。")
-        };
-
         private readonly List<Rect> obstacleRects = new List<Rect>();
         private Canvas canvas;
         private RectTransform keyRect;
@@ -61,10 +44,15 @@ namespace RPG
             DialogueController currentDialogue = FindObjectOfType<DialogueController>();
             if (!isCompleted)
             {
-                return currentDialogue.StartDialogue(StartPages, StartMinigame);
+                return currentDialogue.StartDialogue(PlayerPages(
+                    "apartment.chunbaoBedroom.phone.start"), StartMinigame);
             }
 
-            DialoguePage[] pages = passwordRead ? RepeatPasswordPages : FirstPasswordPages;
+            DialoguePage[] pages = passwordRead
+                ? PlayerPages("apartment.chunbaoBedroom.phone.password.repeat")
+                : PlayerPages("apartment.chunbaoBedroom.phone.password.first.1",
+                    "apartment.chunbaoBedroom.phone.password.first.2",
+                    "apartment.chunbaoBedroom.phone.password.first.3");
             return currentDialogue.StartDialogue(pages, () => passwordRead = true);
         }
 
@@ -147,9 +135,9 @@ namespace RPG
 
             RectTransform panel = CreateImage("Phone Game Panel", canvas.transform, Color.black,
                 new Vector2(1280f, 760f));
-            CreateText("Phone Game Title", panel, "林春宝的手机游戏", 30,
+            CreateText("Phone Game Title", panel, GameLocalization.Get("apartment.ui.phoneGame.title"), 30,
                 new Vector2(0f, 322f));
-            CreateText("Phone Game Hint", panel, "按 W / S 控制钥匙上下移动，避开障碍并抵达门前", 22,
+            CreateText("Phone Game Hint", panel, GameLocalization.Get("apartment.ui.phoneGame.hint"), 22,
                 new Vector2(0f, -322f));
 
             RectTransform border = CreateImage("Game Area Border", panel,
@@ -259,6 +247,14 @@ namespace RPG
         private static Rect GetRect(RectTransform rect)
         {
             return new Rect(rect.anchoredPosition - rect.sizeDelta * .5f, rect.sizeDelta);
+        }
+
+        private static DialoguePage[] PlayerPages(params string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            return pages;
         }
     }
 }
