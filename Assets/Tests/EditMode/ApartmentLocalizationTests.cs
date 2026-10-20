@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace RPG.Tests
 {
@@ -10,6 +13,8 @@ namespace RPG.Tests
         {
             UnityEngine.PlayerPrefs.DeleteKey(GameLocalization.PreferenceKey);
             GameLocalization.Reload();
+            DestroyIfPresent("No Belonging Ending Canvas");
+            DestroyIfPresent("Indifferent Ending Canvas");
         }
 
         [Test]
@@ -235,6 +240,77 @@ namespace RPG.Tests
                 Is.EqualTo("ベッド脇の棚の鍵"));
 
             UnityEngine.Object.DestroyImmediate(gameObject);
+        }
+
+        [Test]
+        public void Batch5_UsesApprovedDepartureConfrontationAndEndingTranslations()
+        {
+            Dictionary<string, string[]> texts = ApartmentLocalizationTexts.Create();
+
+            Assert.That(texts["apartment.departure.askLocation"], Is.EqualTo(new[]
+            {
+                "我什么都拿好了，告诉我那个新开的小归墟在哪里吧。",
+                "I've got everything. Tell me where that newly opened small hole of Abyss is.",
+                "必要なものは全部持った。新しく開いた小さな深淵の穴がどこにあるのか、教えてくれ。"
+            }));
+            Assert.That(texts["apartment.confrontation.final.noPlace"], Is.EqualTo(new[]
+            {
+                "看来，这里真的没有我的位置了。",
+                "It seems there really is no place for me here.",
+                "どうやら、ここには本当に僕の居場所がないらしい。"
+            }));
+            Assert.That(texts["apartment.ending.noBelonging.5"], Is.EqualTo(new[]
+            {
+                "这是真正属于你的结局。",
+                "This is the ending that truly belongs to you.",
+                "これこそが、本当にあなた自身の結末だ。"
+            }));
+        }
+
+        [Test]
+        public void Batch5_NoBelongingEndingUsesCameraIndependentTwoPageCanvas()
+        {
+            GameLocalization.SetLanguage(GameLanguage.English);
+            GameObject confrontationObject = new GameObject("Confrontation Test");
+            ApartmentConfrontation confrontation = confrontationObject.AddComponent<ApartmentConfrontation>();
+            typeof(ApartmentConfrontation).GetMethod("ShowTrueEnding",
+                BindingFlags.Instance | BindingFlags.NonPublic).Invoke(confrontation, null);
+
+            GameObject canvasObject = GameObject.Find("No Belonging Ending Canvas");
+            Assert.That(canvasObject, Is.Not.Null);
+            Assert.That(canvasObject.GetComponent<Canvas>().renderMode,
+                Is.EqualTo(RenderMode.ScreenSpaceOverlay));
+            Assert.That(canvasObject.GetComponent<Camera>(), Is.Null);
+
+            Transform endingPage = canvasObject.transform.Find("Ending Page");
+            Transform thanksPage = canvasObject.transform.Find("Thanks Page");
+            Assert.That(endingPage, Is.Not.Null);
+            Assert.That(thanksPage, Is.Not.Null);
+            Assert.That(endingPage.gameObject.activeSelf, Is.True);
+            Assert.That(thanksPage.gameObject.activeSelf, Is.False);
+            Assert.That(FindText(endingPage, "Ending Title").text, Is.EqualTo("Ending: Nowhere to Belong"));
+            Assert.That(FindText(endingPage, "Ending Description").text,
+                Does.Contain("This is the ending that truly belongs to you."));
+
+            canvasObject.GetComponent<NoBelongingEndingPages>().ShowThanksPage();
+            Assert.That(endingPage.gameObject.activeSelf, Is.False);
+            Assert.That(thanksPage.gameObject.activeSelf, Is.True);
+            Assert.That(FindText(thanksPage, "Thanks").text, Is.EqualTo("Thank You for Playing"));
+
+            UnityEngine.Object.DestroyImmediate(confrontationObject);
+        }
+
+        private static Text FindText(Transform parent, string name)
+        {
+            Transform child = parent.Find(name);
+            Assert.That(child, Is.Not.Null, "Missing ending text object: " + name);
+            return child.GetComponent<Text>();
+        }
+
+        private static void DestroyIfPresent(string name)
+        {
+            GameObject gameObject = GameObject.Find(name);
+            if (gameObject != null) UnityEngine.Object.DestroyImmediate(gameObject);
         }
     }
 }

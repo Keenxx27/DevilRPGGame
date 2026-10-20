@@ -6,35 +6,6 @@ namespace RPG
 {
     public sealed class ApartmentConfrontation : MonoBehaviour
     {
-        private static readonly DialoguePage[] InitialPages =
-        {
-            new DialoguePage("林春宝", "……凭什么？就凭一张没盖章的破纸？\n我哥脸上那点东西怎么了？碍着谁了？！"),
-            new DialoguePage("行政人员", "林春宝同学，请冷静。这是学校的决定，也是为了全体师生的安全考虑。\n您兄长面部的异常情况，根据《非人知性体接触者管理暂行条例》第七款，需要接受指定机构的隔离检查。\n在检查结果出来前，暂停其一切校内活动。"),
-            new DialoguePage("林春宝", "不是房东就是哪个混蛋搞的鬼！")
-        };
-
-        private static readonly DialoguePage[] NoticePages =
-        {
-            new DialoguePage("行政人员", "屋主回来了。通知您已经看到。请于四十八小时内，携带这份通知，\n前往市立第三检疫中心报到。逾期未到，将由安全部门强制执行。"),
-            new DialoguePage("主角", "……"),
-            new DialoguePage("主角", "我知道了。")
-        };
-
-        private static readonly DialoguePage[] ThreatPages =
-        {
-            new DialoguePage("行政人员", "你知道吗……"),
-            new DialoguePage("行政人员", "如果我们俩是清理部门的人，会考虑当场把你和你妹妹的人头\n抛到大街上。"),
-            new DialoguePage("行政人员", "走。")
-        };
-
-        private static readonly DialoguePage[] FinalPages =
-        {
-            new DialoguePage("林春宝", "哥！你不能去！那种地方进去谁知道会怎样！\n我们走，现在就收拾东西……"),
-            new DialoguePage("主角", "这停学通知措辞严谨，引用条例，看似合法合规。\n但它本质上是一纸驱逐令。"),
-            new DialoguePage("主角", "看来，这里真的没有我的位置了。"),
-            new DialoguePage("主角", "所以，我们得去别处看看。")
-        };
-
         [SerializeField] private GameObject linChunbao;
         [SerializeField] private GameObject officialOne;
         [SerializeField] private GameObject officialTwo;
@@ -65,17 +36,17 @@ namespace RPG
             started = true;
             SetSceneActorsActive(true);
             SetPlayerControls(false);
-            player.GetComponent<DialogueController>()?.StartDialogue(InitialPages, MovePlayerForward);
+            player.GetComponent<DialogueController>()?.StartDialogue(CreateInitialPages(), MovePlayerForward);
         }
 
         private void MovePlayerForward()
         {
-            StartCoroutine(MovePlayerThenDialogue(new Vector2(140f, -1.25f), NoticePages, MoveToSofa));
+            StartCoroutine(MovePlayerThenDialogue(new Vector2(140f, -1.25f), CreateNoticePages(), MoveToSofa));
         }
 
         private void MoveToSofa()
         {
-            StartCoroutine(MovePlayerThenDialogue(new Vector2(141.65f, .6f), ThreatPages, LeaveOfficials));
+            StartCoroutine(MovePlayerThenDialogue(new Vector2(141.65f, .6f), CreateThreatPages(), LeaveOfficials));
         }
 
         private IEnumerator MovePlayerThenDialogue(Vector2 destination, DialoguePage[] pages,
@@ -124,7 +95,7 @@ namespace RPG
                 }
             }
 
-            player?.GetComponent<DialogueController>()?.StartDialogue(FinalPages, ShowTrueEnding);
+            player?.GetComponent<DialogueController>()?.StartDialogue(CreateFinalPages(), ShowTrueEnding);
         }
 
         private void ShowTrueEnding()
@@ -134,22 +105,37 @@ namespace RPG
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 60;
             UiScaleSettings.Configure(canvasObject.AddComponent<CanvasScaler>());
-            GameObject panelObject = new GameObject("Ending Panel");
-            panelObject.transform.SetParent(canvasObject.transform, false);
-            Image panel = panelObject.AddComponent<Image>();
+
+            GameObject endingPage = CreateEndingPage("Ending Page", canvasObject.transform);
+            CreateEndingText("Ending Title", endingPage.transform,
+                GameLocalization.Get("apartment.ending.noBelonging.title"), 46,
+                new Vector2(0f, 235f));
+            Text description = CreateEndingText("Ending Description", endingPage.transform,
+                string.Join("\n\n", EndingTexts()), 25, new Vector2(0f, -25f));
+            description.rectTransform.sizeDelta = new Vector2(1100f, 470f);
+
+            GameObject thanksPage = CreateEndingPage("Thanks Page", canvasObject.transform);
+            CreateEndingText("Thanks", thanksPage.transform,
+                GameLocalization.Get("apartment.ending.thanks"), 32, Vector2.zero);
+            thanksPage.SetActive(false);
+            canvasObject.AddComponent<NoBelongingEndingPages>().Initialize(endingPage, thanksPage);
+        }
+
+        private static GameObject CreateEndingPage(string name, Transform parent)
+        {
+            GameObject page = new GameObject(name);
+            page.transform.SetParent(parent, false);
+            Image panel = page.AddComponent<Image>();
             panel.color = new Color(0f, 0f, 0f, .9f);
             RectTransform panelRect = panel.rectTransform;
             panelRect.anchorMin = Vector2.zero;
             panelRect.anchorMax = Vector2.one;
             panelRect.offsetMin = Vector2.zero;
             panelRect.offsetMax = Vector2.zero;
-            CreateEndingText("Ending Title", panelObject.transform, "结局：无归属者", 46,
-                new Vector2(0f, 35f));
-            CreateEndingText("Thanks", panelObject.transform, "感谢游玩", 26,
-                new Vector2(0f, -42f));
+            return page;
         }
 
-        private static void CreateEndingText(string name, Transform parent, string content,
+        private static Text CreateEndingText(string name, Transform parent, string content,
             int fontSize, Vector2 position)
         {
             GameObject textObject = new GameObject(name);
@@ -165,6 +151,62 @@ namespace RPG
             rect.anchorMax = new Vector2(.5f, .5f);
             rect.anchoredPosition = position;
             rect.sizeDelta = new Vector2(700f, 100f);
+            return text;
+        }
+
+        private static string[] EndingTexts() => new[]
+        {
+            GameLocalization.Get("apartment.ending.noBelonging.1"),
+            GameLocalization.Get("apartment.ending.noBelonging.2"),
+            GameLocalization.Get("apartment.ending.noBelonging.3"),
+            GameLocalization.Get("apartment.ending.noBelonging.4"),
+            GameLocalization.Get("apartment.ending.noBelonging.5")
+        };
+
+        private static DialoguePage[] CreateInitialPages()
+        {
+            string lin = GameLocalization.Get("apartment.speaker.linChunbao");
+            string official = GameLocalization.Get("apartment.speaker.municipalOfficer");
+            return new[]
+            {
+                new DialoguePage(lin, GameLocalization.Get("apartment.confrontation.initial.linChallenge")),
+                new DialoguePage(official, GameLocalization.Get("apartment.confrontation.initial.officialNotice")),
+                new DialoguePage(lin, GameLocalization.Get("apartment.confrontation.initial.linAccusation"))
+            };
+        }
+
+        private static DialoguePage[] CreateNoticePages()
+        {
+            string official = GameLocalization.Get("apartment.speaker.municipalOfficer");
+            return new[]
+            {
+                new DialoguePage(official, GameLocalization.Get("apartment.confrontation.notice.report")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.confrontation.notice.silence")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.confrontation.notice.acknowledge"))
+            };
+        }
+
+        private static DialoguePage[] CreateThreatPages()
+        {
+            string official = GameLocalization.Get("apartment.speaker.municipalOfficer");
+            return new[]
+            {
+                new DialoguePage(official, GameLocalization.Get("apartment.confrontation.threat.lead")),
+                new DialoguePage(official, GameLocalization.Get("apartment.confrontation.threat.cleanup")),
+                new DialoguePage(official, GameLocalization.Get("apartment.confrontation.threat.leave"))
+            };
+        }
+
+        private static DialoguePage[] CreateFinalPages()
+        {
+            string lin = GameLocalization.Get("apartment.speaker.linChunbao");
+            return new[]
+            {
+                new DialoguePage(lin, GameLocalization.Get("apartment.confrontation.final.linPlea")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.confrontation.final.evictionOrder")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.confrontation.final.noPlace")),
+                new DialoguePage("主角", GameLocalization.Get("apartment.confrontation.final.leaveTogether"))
+            };
         }
 
         private static bool MoveActor(GameObject actor, Vector2 destination)
@@ -193,6 +235,32 @@ namespace RPG
             if (movement != null) movement.enabled = enabled;
             player.enabled = enabled;
             if (inventory != null) inventory.enabled = enabled;
+        }
+    }
+
+    public sealed class NoBelongingEndingPages : MonoBehaviour
+    {
+        private GameObject endingPage;
+        private GameObject thanksPage;
+        private float advanceAllowedAt;
+
+        public void Initialize(GameObject ending, GameObject thanks)
+        {
+            endingPage = ending;
+            thanksPage = thanks;
+            advanceAllowedAt = Time.unscaledTime + .2f;
+        }
+
+        private void Update()
+        {
+            if (Time.unscaledTime < advanceAllowedAt || thanksPage == null || thanksPage.activeSelf) return;
+            if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Space)) ShowThanksPage();
+        }
+
+        public void ShowThanksPage()
+        {
+            if (endingPage != null) endingPage.SetActive(false);
+            if (thanksPage != null) thanksPage.SetActive(true);
         }
     }
 }
