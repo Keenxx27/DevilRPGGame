@@ -81,7 +81,7 @@ namespace RPG.Tests
             AssertNoComponents<FlowerpotBreakable>(scene);
             AssertNoComponents<ClassroomLibraryCardPuzzle>(scene);
             AssertNoComponents<PlayerInteraction>(scene);
-            AssertNoComponents<Camera>(scene);
+            Assert.That(Find(scene, "Camera")?.GetComponent<Camera>(), Is.Not.Null);
         }
 
         [Test]
@@ -101,9 +101,9 @@ namespace RPG.Tests
 
             Scene library = EditorSceneManager.OpenScene(LibraryScenePath, OpenSceneMode.Single);
             AssertAutomaticTransition(library, "Library To Corridor Doorway",
-                new Vector2(60f, -5.8f), "SchoolCorridor", "CorridorFromLibrary");
-            AssertSpawn(library, "LibraryFromCorridor", new Vector2(60f, -4.7f),
-                new Vector3(60f, 0f, -10f));
+                new Vector2(0f, -5.8f), "SchoolCorridor", "CorridorFromLibrary");
+            AssertSpawn(library, "LibraryFromCorridor", new Vector2(0f, -4.7f),
+                new Vector3(0f, 0f, -10f));
         }
 
         private static GameObject Find(Scene scene, string objectName)

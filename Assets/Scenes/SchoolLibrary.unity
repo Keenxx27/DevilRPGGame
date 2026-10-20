@@ -3782,7 +3782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: LibraryFromCorridor
-  cameraPosition: {x: 60, y: 0, z: -10}
+  cameraPosition: {x: 0, y: 0, z: -10}
 --- !u!1 &975480208
 GameObject:
   m_ObjectHideFlags: 0

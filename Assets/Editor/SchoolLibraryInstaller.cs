@@ -7064,7 +7064,7 @@ public static class SchoolLibraryInstaller
         ApplyLibraryReadingChairArtwork(libraryScene);
 
         CreateSpawn(library.transform, "LibraryFromCorridor", new Vector2(0f, -4.7f),
-            new Vector3(60f, 0f, -10f));
+            new Vector3(0f, 0f, -10f));
         CreateAutomaticTransitionPoint(library.transform, "Library To Corridor Doorway",
             new Vector2(60f, -5.8f), "SchoolCorridor", "CorridorFromLibrary");
 

@@ -21,7 +21,7 @@ namespace RPG
             if (source == null)
             {
                 GameObject host = new GameObject("UI Audio");
-                Object.DontDestroyOnLoad(host);
+                if (Application.isPlaying) Object.DontDestroyOnLoad(host);
                 source = host.AddComponent<AudioSource>();
                 source.playOnAwake = false;
             }
@@ -85,7 +85,7 @@ namespace RPG
         {
             if (source != null) return;
             GameObject host = new GameObject("UI Audio");
-            Object.DontDestroyOnLoad(host);
+            if (Application.isPlaying) Object.DontDestroyOnLoad(host);
             source = host.AddComponent<AudioSource>();
             source.playOnAwake = false;
         }
