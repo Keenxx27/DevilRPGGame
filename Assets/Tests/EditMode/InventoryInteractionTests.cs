@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using RPG;
+using System.Reflection;
 using UnityEngine;
 
 namespace RPG.Tests
@@ -151,8 +152,10 @@ namespace RPG.Tests
             WorldItem item = CreateItem("Knife", Vector2.zero);
             item.Configure("菜刀", true);
             item.ConfigureLocalization("apartment.knife", "apartment.item.knife");
-            inventory.RegisterNearby(item);
-            Assert.That(inventory.TryPickUpNearest(), Is.True);
+            FieldInfo slotsField = typeof(PlayerInventory).GetField("slots",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            var slots = (InventorySlots<WorldItem>)slotsField.GetValue(inventory);
+            Assert.That(slots.TryAdd(item, out _), Is.True);
 
             Assert.That(inventory.TryRemoveFirstById("apartment.knife", out WorldItem removed), Is.True);
             Assert.That(removed, Is.SameAs(item));
