@@ -22,6 +22,23 @@ namespace RPG.Tests
         }
 
         [Test]
+        public void Get_UsesApprovedGlobalUiTextForEveryLanguage()
+        {
+            Assert.That(GameLocalization.Get("dialogue.hint", GameLanguage.SimplifiedChinese),
+                Is.EqualTo("R 继续　Space 跳过"));
+            Assert.That(GameLocalization.Get("dialogue.hint", GameLanguage.English),
+                Is.EqualTo("R Advance　Space Skip"));
+            Assert.That(GameLocalization.Get("dialogue.hint", GameLanguage.Japanese),
+                Is.EqualTo("R 次へ　Space スキップ"));
+            Assert.That(GameLocalization.Get("pause.message", GameLanguage.SimplifiedChinese),
+                Is.EqualTo("游戏已暂停\n\n按 Esc 继续"));
+            Assert.That(GameLocalization.Get("pause.message", GameLanguage.English),
+                Is.EqualTo("Game Paused\n\nPress Esc to Resume"));
+            Assert.That(GameLocalization.Get("pause.message", GameLanguage.Japanese),
+                Is.EqualTo("ゲーム一時停止\n\nEscキーで再開"));
+        }
+
+        [Test]
         public void Format_InsertsThePlayerNameWithoutChangingIt()
         {
             GameLocalization.SetLanguage(GameLanguage.Japanese);
@@ -45,7 +62,20 @@ namespace RPG.Tests
             GameLocalization.SetLanguage(GameLanguage.English);
 
             Assert.That(GameLocalization.Get("classroom.dismissal.student1"), Is.EqualTo(
-                "…Why is even easy prey to demon hunters taking a course on demon hunting? Aren’t him afraid?"));
+                "...Why is someone who's easy prey for demon hunters taking a course on demon hunting? Isn't he scared to death?"));
+        }
+
+        [Test]
+        public void Get_UsesBokuForApprovedProtagonistLines()
+        {
+            Assert.That(GameLocalization.Get("classroom.afterClass.protagonist4", GameLanguage.Japanese),
+                Is.EqualTo("僕たちは、いったい何をしている？"));
+            Assert.That(GameLocalization.Get("classroom.card.flowerpot.first.2", GameLanguage.Japanese),
+                Is.EqualTo("僕の図書カードだ。"));
+            Assert.That(GameLocalization.Get("classroom.card.flowerpot.first.5", GameLanguage.Japanese),
+                Is.EqualTo("顔のこの痕があるだけで、あいつらは好き勝手に僕をいじめていいと思っている。"));
+            Assert.That(GameLocalization.Get("library.environment.bookcase.first", GameLanguage.Japanese),
+                Is.EqualTo("これらの古書は題名ばかり仰々しく、内容も真偽定かでない。だが、僕に必要なのはまさにこれだ――主流の語りの外にある、断片的で、人の息づかいを残した声。"));
         }
 
         [Test]

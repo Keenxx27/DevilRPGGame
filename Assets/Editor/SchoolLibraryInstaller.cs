@@ -2250,12 +2250,16 @@ public static class SchoolLibraryInstaller
             throw new InvalidOperationException("荧光菌洞蘑菇美术素材导入失败。");
         }
 
-        ApplyFluorescentMushroomVisual(FindInScene(cave, "最大荧光蘑菇丛"), largeArtwork);
-        ApplyFluorescentMushroomVisual(FindInScene(cave, "荧光蘑菇丛 左"), leftArtwork);
-        ApplyFluorescentMushroomVisual(FindInScene(cave, "荧光蘑菇丛 右"), rightArtwork);
+        ApplyFluorescentMushroomVisual(FindInScene(cave, "最大荧光蘑菇丛"), largeArtwork,
+            new Vector2(-.37f, .6f), new Vector2(.095231265f, .15515949f));
+        ApplyFluorescentMushroomVisual(FindInScene(cave, "荧光蘑菇丛 左"), leftArtwork,
+            new Vector2(0f, .8682f), new Vector2(.06510417f, .26722416f));
+        ApplyFluorescentMushroomVisual(FindInScene(cave, "荧光蘑菇丛 右"), rightArtwork,
+            new Vector2(.07f, -.26f), new Vector2(.07251953f, .18821289f));
     }
 
-    private static void ApplyFluorescentMushroomVisual(GameObject mushroom, Sprite artworkSprite)
+    private static void ApplyFluorescentMushroomVisual(GameObject mushroom, Sprite artworkSprite,
+        Vector2 localPosition, Vector2 localScale)
     {
         SpriteRenderer baseRenderer = mushroom.GetComponent<SpriteRenderer>();
         if (baseRenderer == null) throw new InvalidOperationException(mushroom.name + " 缺少精灵渲染器。");
@@ -2267,10 +2271,9 @@ public static class SchoolLibraryInstaller
             artwork.SetParent(mushroom.transform, false);
         }
 
-        artwork.localPosition = Vector3.zero;
+        artwork.localPosition = localPosition;
         artwork.localRotation = Quaternion.identity;
-        artwork.localScale = new Vector3(
-            1f / artworkSprite.bounds.size.x, 1f / artworkSprite.bounds.size.y, 1f);
+        artwork.localScale = new Vector3(localScale.x, localScale.y, 1f);
 
         SpriteRenderer artworkRenderer = artwork.GetComponent<SpriteRenderer>();
         if (artworkRenderer == null) artworkRenderer = artwork.gameObject.AddComponent<SpriteRenderer>();
@@ -6137,8 +6140,11 @@ public static class SchoolLibraryInstaller
         CreateGangDogMember(roadRoot.transform, "丧家犬低级成员 2", new Vector2(235.2f, 1.1f),
             new Vector2(232.2f, .3f), new Vector2(239f, 1.9f), enemySprite, enemyMaterial);
         GameObject returnSign = CreateUnit(roadRoot.transform, "Return To Apartment Sign",
-            new Vector2(248.7f, -4.5f), new Vector2(.32f, 2.2f), new Color(.28f, .62f, .8f, 1f),
+            new Vector2(249.73f, -4.57f), new Vector2(.32f, 2.2f), new Color(.28f, .62f, .8f, 1f),
             3, false, sprite, material);
+        returnSign.GetComponent<SpriteRenderer>().enabled = false;
+        BoxCollider2D returnTrigger = returnSign.AddComponent<BoxCollider2D>();
+        returnTrigger.isTrigger = true;
         MapTransitionPoint returnTransition = returnSign.AddComponent<MapTransitionPoint>();
         returnTransition.Configure("ApartmentEntrance", "ApartmentEntranceFromRoadToSuburbs1");
         CreateInvestigationPoint(roadRoot.transform, "Road To Apartment Transition Investigation",
@@ -6147,8 +6153,11 @@ public static class SchoolLibraryInstaller
         CreateSpawn(roadRoot.transform, "RoadToSuburbs1FromApartment", new Vector2(8f, -4.5f),
             new Vector3(240f, -1.5f, -10f));
         GameObject roadTwoTransition = CreateUnit(roadRoot.transform, "Road To Suburbs 2 Transition",
-            new Vector2(231.3f, 1.2f), new Vector2(.32f, 2.2f), new Color(.28f, .62f, .8f, 1f),
+            new Vector2(230.3f, 1.0704f), new Vector2(.32f, 2.3991f), new Color(.28f, .62f, .8f, 1f),
             3, false, sprite, material);
+        roadTwoTransition.GetComponent<SpriteRenderer>().enabled = false;
+        BoxCollider2D roadTwoTrigger = roadTwoTransition.AddComponent<BoxCollider2D>();
+        roadTwoTrigger.isTrigger = true;
         MapTransitionPoint roadTwoPoint = roadTwoTransition.AddComponent<MapTransitionPoint>();
         roadTwoPoint.Configure("RoadToSuburbs2", "RoadToSuburbs2FromRoadOne");
         CreateInvestigationPoint(roadRoot.transform, "Road To Suburbs 2 Transition Investigation",
@@ -6210,16 +6219,22 @@ public static class SchoolLibraryInstaller
         CreateGangDogAdvancedMember(roadTwoRoot.transform, "丧家犬高级成员 3", new Vector2(264.8f, -4.25f),
             new Vector2(262f, -5.25f), new Vector2(267.5f, -3.35f), enemySprite, enemyMaterial);
         GameObject rubbleTransition = CreateUnit(roadTwoRoot.transform, "Rubble Pile Transition",
-            new Vector2(261.2f, -5.05f), new Vector2(1.3f, .7f), new Color(.5f, .38f, .26f, 1f),
+            new Vector2(260.3418f, -4.4535f), new Vector2(.50349f, 2.2929199f), new Color(.5f, .38f, .26f, 1f),
             3, false, sprite, material);
+        rubbleTransition.GetComponent<SpriteRenderer>().enabled = false;
+        BoxCollider2D rubbleTrigger = rubbleTransition.AddComponent<BoxCollider2D>();
+        rubbleTrigger.isTrigger = true;
         MapTransitionPoint rubblePoint = rubbleTransition.AddComponent<MapTransitionPoint>();
         rubblePoint.Configure("RubblePile", "RubblePileFromRoadTwo");
         CreateInvestigationPoint(roadTwoRoot.transform, "Rubble Pile Transition Investigation",
             rubbleTransition.transform.position, new Vector2(1.8f, 2f),
             InvestigationKind.SuburbanRoadTransition, rubblePoint);
         GameObject returnToRoadOne = CreateUnit(roadTwoRoot.transform, "Return To Road 1 Sign",
-            new Vector2(278.7f, 1.3f), new Vector2(.32f, 2.2f), new Color(.28f, .62f, .8f, 1f),
+            new Vector2(279.63f, 1.3f), new Vector2(.32f, 2.2f), new Color(.28f, .62f, .8f, 1f),
             3, false, sprite, material);
+        returnToRoadOne.GetComponent<SpriteRenderer>().enabled = false;
+        BoxCollider2D roadOneTrigger = returnToRoadOne.AddComponent<BoxCollider2D>();
+        roadOneTrigger.isTrigger = true;
         MapTransitionPoint roadOnePoint = returnToRoadOne.AddComponent<MapTransitionPoint>();
         roadOnePoint.Configure("RoadToSuburbs1", "RoadToSuburbs1FromRoadTwo");
         CreateInvestigationPoint(roadTwoRoot.transform, "Road To Suburbs 1 Transition Investigation",
@@ -6423,8 +6438,11 @@ public static class SchoolLibraryInstaller
         GameObject thirteenFollower = CreateUnit(roadHomeRoot.transform, "十三", new Vector2(397.2f, -.7f),
             new Vector2(.72f, .72f), Color.black, 5, false, sprite, material);
         thirteenFollower.AddComponent<ThirteenFollower>();
-        GameObject homeExit = CreateUnit(roadHomeRoot.transform, "回到公寓外", new Vector2(380.8f, -.3f),
-            new Vector2(.5f, 2.2f), new Color(.28f, .62f, .8f, 1f), 3, false, sprite, material);
+        GameObject homeExit = CreateUnit(roadHomeRoot.transform, "回到公寓外", new Vector2(380.5f, -.5009f),
+            new Vector2(.5f, 10.537516f), new Color(.28f, .62f, .8f, 1f), 3, false, sprite, material);
+        homeExit.GetComponent<SpriteRenderer>().enabled = false;
+        BoxCollider2D homeExitTrigger = homeExit.AddComponent<BoxCollider2D>();
+        homeExitTrigger.isTrigger = true;
         MapTransitionPoint homePoint = homeExit.AddComponent<MapTransitionPoint>();
         homePoint.Configure("ApartmentEntrance", "ApartmentEntranceFromRoadHome");
         CreateSpawn(roadHomeRoot.transform, "RoadHomeFromMushroomCave", new Vector2(8.5f, -.3f),

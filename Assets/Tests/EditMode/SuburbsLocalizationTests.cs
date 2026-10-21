@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace RPG.Tests
@@ -6,16 +5,33 @@ namespace RPG.Tests
     public class SuburbsLocalizationTests
     {
         [Test]
-        public void RoadOneTranslations_AllKeysContainThreeNonEmptyValues()
+        public void RoadOneTranslations_AllKeysResolveForEveryLanguage()
         {
-            Dictionary<string, string[]> texts = SuburbsLocalizationTexts.Create();
-
-            Assert.That(texts, Has.Count.EqualTo(8));
-            foreach (KeyValuePair<string, string[]> pair in texts)
+            string[] keys =
             {
-                Assert.That(pair.Key, Does.StartWith("suburbs."));
-                Assert.That(pair.Value, Has.Length.EqualTo(3));
-                Assert.That(pair.Value, Has.All.Not.Null.And.Not.Empty);
+                "suburbs.road1.intro.1",
+                "suburbs.road1.intro.2",
+                "suburbs.road1.intro.3",
+                "suburbs.road1.intro.4",
+                "suburbs.speaker.strayDogs",
+                "suburbs.road1.lowMember.block",
+                "suburbs.road1.endpoint.1",
+                "suburbs.road1.endpoint.2"
+            };
+
+            foreach (string key in keys)
+            {
+                foreach (GameLanguage language in new[]
+                    {
+                        GameLanguage.SimplifiedChinese,
+                        GameLanguage.English,
+                        GameLanguage.Japanese
+                    })
+                {
+                    string localized = GameLocalization.Get(key, language);
+                    Assert.That(localized, Is.Not.Null.And.Not.Empty);
+                    Assert.That(localized, Is.Not.EqualTo(key));
+                }
             }
         }
 
@@ -39,6 +55,21 @@ namespace RPG.Tests
                 Is.EqualTo("ここは俺たちの縄張りだ。お前を通す気はねえ！"));
             Assert.That(GameLocalization.Get("suburbs.road1.endpoint.2", GameLanguage.English),
                 Is.EqualTo("But I can't say the same for the road ahead. I may run into even more dangerous members of the Stray Dogs."));
+        }
+
+        [Test]
+        public void RoadTwo_UsesApprovedTranslationsAndGangTerminology()
+        {
+            Assert.That(GameLocalization.Get("suburbs.road2.intro.1", GameLanguage.English),
+                Is.EqualTo("The road is even more complicated here."));
+            Assert.That(GameLocalization.Get("suburbs.road2.intro.2", GameLanguage.Japanese),
+                Is.EqualTo("そういえば……最近、独り言がますますひどくなっている。"));
+            Assert.That(GameLocalization.Get("suburbs.road2.advancedMember.capture", GameLanguage.English),
+                Is.EqualTo("You're lucky we haven't carved you up and sold you as devil parts. Now get lost!"));
+            Assert.That(GameLocalization.Get("suburbs.road2.advancedMember.capture", GameLanguage.English),
+                Does.Not.Contain("demon"));
+            Assert.That(GameLocalization.Get("suburbs.road2.endpoint", GameLanguage.Japanese),
+                Is.EqualTo("「負け犬」の連中は、ただ一日を無事に過ごせればそれでいい。\nいつもどこかの路地裏に身を寄せ合い、一緒に眠って夜を明かす——\nまるで鼠穴の中にいるように。"));
         }
     }
 }

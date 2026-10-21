@@ -4,12 +4,6 @@ namespace RPG
 {
     public sealed class RoadToSuburbsOneEndpointHint : MonoBehaviour
     {
-        private static readonly DialoguePage[] Pages =
-        {
-            new DialoguePage("主角", "呼……逃过一劫。"),
-            new DialoguePage("主角", "但前面的路就不好说了，可能会遇到更加危险的丧家犬成员。")
-        };
-
         private bool hasPlayed;
 
         private void Update()
@@ -20,7 +14,11 @@ namespace RPG
 
             Vector2 position = dialogue.transform.position;
             if (position.x > 233f || position.y < .2f) return;
-            hasPlayed = dialogue.StartDialogue(Pages);
+            hasPlayed = dialogue.StartDialogue(new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("suburbs.road1.endpoint.1")),
+                new DialoguePage("主角", GameLocalization.Get("suburbs.road1.endpoint.2"))
+            });
         }
     }
 }

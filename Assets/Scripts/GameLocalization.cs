@@ -56,6 +56,20 @@ namespace RPG
                 }
             },
             { "tutorial.startHint", new[] { "按E键开始游戏", "Press E to Start", "Eキーでゲーム開始" } },
+            { "dialogue.hint", new[]
+                {
+                    "R 继续　Space 跳过",
+                    "R Advance　Space Skip",
+                    "R 次へ　Space スキップ"
+                }
+            },
+            { "pause.message", new[]
+                {
+                    "游戏已暂停\n\n按 Esc 继续",
+                    "Game Paused\n\nPress Esc to Resume",
+                    "ゲーム一時停止\n\nEscキーで再開"
+                }
+            },
             { "inventory.full", new[] { "东西太满了，最好先把暂时用不到的东西放下。", "Inventory is full. I should put down something I don't need right now.", "持ち物がいっぱいだ。今は使わない物を置いておいたほうがいい。" } },
             { "classroom.speaker.professor", new[] { "教授", "Professor", "教授" } },
             { "classroom.speaker.student1", new[] { "学生1", "Student 1", "学生1" } },
@@ -64,12 +78,12 @@ namespace RPG
             { "classroom.lecture.2", new[] { "恶魔是归墟侵蚀具象化的、充满攻击性的副产物。", "Demons are aggressive byproducts—the physical manifestations of the Abyss’s corruption.", "悪魔とは、深淵の侵食が具現化した、攻撃性に満ちた副産物だ。" } },
             { "classroom.lecture.3", new[] { "恶魔猎人的任务，就是像清除癌细胞一样，\n将它们从地球的肌体上彻底清除。", "A demon hunter’s duty is to eradicate them from the body of the Earth,\njust as one would remove cancer cells.", "悪魔狩りの任務は、癌細胞を取り除くように、\n奴らを地球という肉体から完全に排除することだ。" } },
             { "classroom.dismissal.professor", new[] { "下课铃响了，同学们下课吧。", "The bell has rung. Class dismissed, everyone.", "終業のベルが鳴った。今日はここまでだ。" } },
-            { "classroom.dismissal.student1", new[] { "……怎么连恶魔猎人眼里的肥肉，都来听关于猎魔的课程？不怕被吓死吗？", "…Why is even easy prey to demon hunters taking a course on demon hunting? Aren’t him afraid?", "……悪魔狩り屋にとっての格好の獲物まで、悪魔狩りの講義を聞きに来るのか？　怖くないのかよ。" } },
+            { "classroom.dismissal.student1", new[] { "……怎么连恶魔猎人眼里的肥肉，都来听关于猎魔的课程？不怕被吓死吗？", "...Why is someone who's easy prey for demon hunters taking a course on demon hunting? Isn't he scared to death?", "……悪魔狩り屋にとっての格好の獲物まで、悪魔狩りの講義を聞きに来るのか？　怖くないのかよ。" } },
             { "classroom.dismissal.student2", new[] { "带着侵蚀痕迹的情况很罕见。听说大都是沾染了归墟能量、又侥幸活下来的人……总之，离他远点。", "People with corruption marks are rare. I hear most were exposed to Abyssal energy and somehow survived… Anyway, stay away from him.", "侵食の痕を持つ人なんて珍しい。深淵のエネルギーに触れて、それでも生き残った人間がほとんどだって……とにかく、あいつには近づかないほうがいい。" } },
             { "classroom.afterClass.protagonist1", new[] { "（左脸被归墟侵蚀的痕迹……正在发热、灼痛。）", "(The mark on the left side of my face, where the Abyss corroded it… is burning, throbbing.)", "（左頬に刻まれた、深淵に侵食された痕が……熱を帯び、焼けるように痛む。）" } },
             { "classroom.afterClass.protagonist2", new[] { "如果它们只是动物。", "What if they’re just animals...", "もし、あれがただの動物なら。" } },
             { "classroom.afterClass.protagonist3", new[] { "如果它们中，有比动物更复杂的存在。", "What if some of them are something more complex than animals?", "もしあの中に、動物よりも複雑な存在がいるなら。" } },
-            { "classroom.afterClass.protagonist4", new[] { "我们到底在做什么？", "What exactly are we doing?", "俺たちは、いったい何をしている？" } },
+            { "classroom.afterClass.protagonist4", new[] { "我们到底在做什么？", "What exactly are we doing?", "僕たちは、いったい何をしている？" } },
             { "classroom.afterClass.protagonist5", new[] { "也许我该去图书馆看看……", "Maybe I should check the library…", "図書館に行ってみるべきか……" } },
             { "classroom.afterClass.protagonist6", new[] { "不知道我的借书卡去哪里了，", "I wonder where my library card went.", "借りた図書カード、どこへやったんだろう。" } },
             { "classroom.afterClass.protagonist7", new[] { "可能是被哪个家伙藏起来了。", "Maybe one of those guys hid it.", "誰かが隠したのかもしれない。" } },
@@ -79,10 +93,10 @@ namespace RPG
             { "classroom.card.teacherDesk", new[] { "讲台下面空空的。", "Nothing under the podium.", "教壇の下は空っぽだ。" } },
             { "classroom.card.blackboard", new[] { "黑板附近也没有。总不可能夹在粉笔槽里吧。", "Nothing near the blackboard, either. It's not like it could be tucked into the chalk tray.", "黒板の近くにもない。まさかチョーク受けに挟まっているわけでもないだろう。" } },
             { "classroom.card.flowerpot.first.1", new[] { "花盆下面……好像压着什么。", "There's... something under the flowerpot.", "植木鉢の下に……何かが押さえつけられている。" } },
-            { "classroom.card.flowerpot.first.2", new[] { "是我的借书卡。", "It's my library card.", "俺の図書カードだ。" } },
+            { "classroom.card.flowerpot.first.2", new[] { "是我的借书卡。", "It's my library card.", "僕の図書カードだ。" } },
             { "classroom.card.flowerpot.first.3", new[] { "花盆纹丝不动。真够沉的。", "That flowerpot won't budge. It's seriously heavy.", "植木鉢はびくともしない。本当に重いな。" } },
             { "classroom.card.flowerpot.first.4", new[] { "把这种东西藏在这里，很好玩吗？", "Is hiding something like this really that funny?", "こんなところに隠して、何が楽しいんだ？" } },
-            { "classroom.card.flowerpot.first.5", new[] { "就因为我脸上的痕迹，他们就觉得可以随便欺负我。", "Just because of the mark on my face, they think they can push me around.", "顔のこの痕があるだけで、あいつらは好き勝手に俺をいじめていいと思っている。" } },
+            { "classroom.card.flowerpot.first.5", new[] { "就因为我脸上的痕迹，他们就觉得可以随便欺负我。", "Just because of the mark on my face, they think they can push me around.", "顔のこの痕があるだけで、あいつらは好き勝手に僕をいじめていいと思っている。" } },
             { "classroom.card.flowerpot.first.6", new[] { "生气又能怎么样……我总不能在教室里和所有人打一架。", "What would getting angry accomplish… It's not like I can pick a fight with everyone in the classroom.", "腹を立てたところで、どうにもならない……教室で全員と殴り合うわけにもいかない。" } },
             { "classroom.card.flowerpot.first.7", new[] { "得找个够结实的东西，把花盆砸开。", "I need something sturdy enough to smash the flowerpot.", "この植木鉢を壊すには、もっと頑丈なものが必要だ。" } },
             { "classroom.card.flowerpot.repeat", new[] { "还是推不动。得找个东西把它砸开。", "Still won't move. I need something to smash it open.", "やっぱり動かない。何かで壊さないと。" } },
@@ -112,7 +126,7 @@ namespace RPG
             { "library.opening.2", new[] { "电子检索只会给出被整理过的答案；\n真正难以归档的东西，往往躲在这些无人问津的角落。", "Electronic searches only return answers that have already been catalogued; the things hardest to archive are often hidden in these forgotten corners.", "電子検索が返すのは、整理された答えだけだ。記録に収まりきらないものほど、こういう誰にも顧みられない片隅に隠れている。" } },
             { "library.opening.3", new[] { "脆弱的手稿、私印的游记、没有被官方档案收录的地方志异……\n如果有关于真实的恶魔的线索，也许就在这里。", "Fragile manuscripts, privately printed travelogues, local tales omitted from official archives... If there are any clues about what demons truly are, they may be here.", "脆い手稿、私家版の紀行文、公式の記録には収められなかった各地の奇譚……悪魔の本当の姿につながる手掛かりがあるなら、ここかもしれない。" } },
             { "library.opening.4", new[] { "先从书架开始找吧。", "Let’s start with the shelves.", "まずは書架から探そう。" } },
-            { "library.environment.bookcase.first", new[] { "这些古籍书名夸张，内容真伪难辨，但这正是我需要的——主流叙事之外的、残破的、带着人味的声音。", "The titles of these old books are extravagant, and their contents are hard to verify. But that's exactly what I need—the broken, human voices outside the mainstream narrative.", "これらの古書は題名ばかり仰々しく、内容も真偽定かでない。だが、俺に必要なのはまさにこれだ――主流の語りの外にある、断片的で、人の息づかいを残した声。" } },
+            { "library.environment.bookcase.first", new[] { "这些古籍书名夸张，内容真伪难辨，但这正是我需要的——主流叙事之外的、残破的、带着人味的声音。", "The titles of these old books are extravagant, and their contents are hard to verify. But that's exactly what I need—the broken, human voices outside the mainstream narrative.", "これらの古書は題名ばかり仰々しく、内容も真偽定かでない。だが、僕に必要なのはまさにこれだ――主流の語りの外にある、断片的で、人の息づかいを残した声。" } },
             { "library.environment.bookcase.1", new[] { "某村樵夫坠入地穴，被发光蘑菇所救。", "A woodcutter from some village fell into an underground cavern and was saved by glowing mushrooms.", "ある村の樵が地下の洞穴へ落ち、光る茸に救われた。" } },
             { "library.environment.bookcase.2", new[] { "某族世代祭祀‘地母’，换取矿产丰饶。", "A certain clan worshipped the “Earth Mother” for generations, in exchange for abundant mineral wealth.", "ある一族は代々「地母」を祀り、鉱物の豊かさを得た。" } },
             { "library.environment.bookcase.4.1", new[] { "……暮年老叟言，其祖曾于矿道深处，遇一能言之石精。石精不害人，反指路避塌方。问其何所求，答曰：‘勿再深掘，惊我眠乡。’后矿竭，人散，地动亦息。", "…Thus spake an old man in his twilight years: deep within the mineways, his forebear once encountered a stone spirit that spake. The spirit harmed no man; rather, it pointed the way and spared him from the cave-in. Asked what it sought, it answered: “Delve no deeper, lest ye rouse my sleeping home.” Thereafter the mine was spent, the people scattered, and the trembling of the earth likewise ceased.", "……暮年の老翁、かく語れり。其の祖、かつて坑道の奥深くにて、物言ふ石精に出会へり。石精、人を害さず、かえって崩落を避くる道を示せり。何を求むるやと問へば、答へて曰く、「これより深く掘るなかれ。我が眠りの郷を驚かすなかれ」と。のち鉱脈尽き、人は散じ、地の揺れもまた息みたり。" } },
@@ -178,6 +192,31 @@ namespace RPG
         {
             var texts = new Dictionary<string, string[]>(CoreTexts);
             foreach (KeyValuePair<string, string[]> pair in ApartmentLocalizationTexts.Create())
+            {
+                texts.Add(pair.Key, pair.Value);
+            }
+
+            foreach (KeyValuePair<string, string[]> pair in SuburbsLocalizationTexts.Create())
+            {
+                texts.Add(pair.Key, pair.Value);
+            }
+
+            foreach (KeyValuePair<string, string[]> pair in RubbleLocalizationTexts.Create())
+            {
+                texts.Add(pair.Key, pair.Value);
+            }
+
+            foreach (KeyValuePair<string, string[]> pair in AbyssLocalizationTexts.Create())
+            {
+                texts.Add(pair.Key, pair.Value);
+            }
+
+            foreach (KeyValuePair<string, string[]> pair in ThirteenLocalizationTexts.Create())
+            {
+                texts.Add(pair.Key, pair.Value);
+            }
+
+            foreach (KeyValuePair<string, string[]> pair in RoadHomeLocalizationTexts.Create())
             {
                 texts.Add(pair.Key, pair.Value);
             }

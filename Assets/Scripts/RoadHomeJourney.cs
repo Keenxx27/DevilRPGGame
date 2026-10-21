@@ -4,22 +4,19 @@ namespace RPG
 {
     public sealed class RoadHomeJourney : MonoBehaviour
     {
-        private static readonly DialoguePage[] QuarterPages =
+        private static readonly string[] QuarterKeys =
         {
-            new DialoguePage("主角", "一种隐秘的、巨大的喜悦蔓延上我这道贯穿面部的侵蚀痕迹。"),
-            new DialoguePage("主角", "几乎要使我笑出来。")
+            "roadHome.quarter.1", "roadHome.quarter.2"
         };
 
-        private static readonly DialoguePage[] HalfPages =
+        private static readonly string[] HalfKeys =
         {
-            new DialoguePage("主角", "我知道了。我亲眼看见了。"),
-            new DialoguePage("主角", "它们不是怪物，它们可以交流，它们有自己的逻辑和……礼仪。\n例如十三。")
+            "roadHome.half.1", "roadHome.half.2"
         };
 
-        private static readonly DialoguePage[] ThreeQuarterPages =
+        private static readonly string[] ThreeQuarterKeys =
         {
-            new DialoguePage("主角", "这个世界是错的。而我，找到了第一块真实的拼图。"),
-            new DialoguePage("主角", "我要带着十三回去认识认识春宝。")
+            "roadHome.threeQuarter.1", "roadHome.threeQuarter.2"
         };
 
         [SerializeField] private float startX;
@@ -40,9 +37,21 @@ namespace RPG
             float progress = Mathf.Clamp01((startX - dialogue.transform.position.x) / (startX - endX));
             float threshold = (nextMilestone + 1) * .25f;
             if (progress < threshold) return;
-            DialoguePage[] pages = nextMilestone == 0 ? QuarterPages
-                : nextMilestone == 1 ? HalfPages : ThreeQuarterPages;
+            string[] keys = nextMilestone == 0 ? QuarterKeys
+                : nextMilestone == 1 ? HalfKeys : ThreeQuarterKeys;
+            DialoguePage[] pages = CreatePages(keys);
             if (dialogue.StartDialogue(pages)) nextMilestone++;
+        }
+
+        private static DialoguePage[] CreatePages(string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
     }
 }

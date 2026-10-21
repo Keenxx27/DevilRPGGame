@@ -5,24 +5,6 @@ namespace RPG
 {
     public sealed class RubbleBossEncounter : MonoBehaviour
     {
-        private static readonly DialoguePage[] EncounterPages =
-        {
-            new DialoguePage("主角", "那里有什么东西。"),
-            new DialoguePage("主角", "是一只……恶魔。"),
-            new DialoguePage("主角", "它看起来不像新闻里那些狰狞的怪物。\n更像一只走错地方的、古怪的蜥蜴。"),
-            new DialoguePage("主角", "……"),
-            new DialoguePage("主角", "可它已经死了。"),
-            new DialoguePage("主角", "看来是旁边的电棍造成的。"),
-            new DialoguePage("主角", "（左脸的痕迹传来一阵细微的、冰凉的悸动，\n仿佛在共鸣某种遥远的痛苦。）"),
-            new DialoguePage("丧家犬老大", "在这儿干什么呢你？没看到我正在进货吗？"),
-            new DialoguePage("主角", "没……没什么。"),
-            new DialoguePage("丧家犬老大", "别以为你脸上那片膏药能瞒过我，我儿子跟你大学一个专业的，\n早跟我说过你。你这半人半魔的怪物！"),
-            new DialoguePage("主角", "你已经杀了那只恶魔，还不够吗？"),
-            new DialoguePage("丧家犬老大", "还不够，凑儿子的学费还不够！"),
-            new DialoguePage("丧家犬老大", "还不够让他读完下一年，好不再做我这恶心的营生！"),
-            new DialoguePage("丧家犬老大", "但依我看，抓到了你这半魔……抵得上再抓五十只……\n不，一百只刚才那样的！")
-        };
-
         [SerializeField] private GangDogBoss boss;
         [SerializeField] private RubbleSwitchPuzzle puzzle;
         [SerializeField] private Vector2 introDestination;
@@ -82,7 +64,24 @@ namespace RPG
             DialogueController dialogue = player.GetComponent<DialogueController>();
             if (dialogue == null || dialogue.IsPlaying) return;
             if (boss != null) boss.gameObject.SetActive(true);
-            dialogue.StartDialogue(EncounterPages, BeginBattle);
+            string bossName = GameLocalization.Get("rubble.speaker.strayDogsBoss");
+            dialogue.StartDialogue(new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.1")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.2")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.3")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.4")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.5")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.6")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.7")),
+                new DialoguePage(bossName, GameLocalization.Get("rubble.encounter.8")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.9")),
+                new DialoguePage(bossName, GameLocalization.Get("rubble.encounter.10")),
+                new DialoguePage("主角", GameLocalization.Get("rubble.encounter.11")),
+                new DialoguePage(bossName, GameLocalization.Get("rubble.encounter.12")),
+                new DialoguePage(bossName, GameLocalization.Get("rubble.encounter.13")),
+                new DialoguePage(bossName, GameLocalization.Get("rubble.encounter.14"))
+            }, BeginBattle);
         }
 
         private void BeginBattle()
@@ -129,15 +128,15 @@ namespace RPG
         {
             if (progressText != null && battleActive)
             {
-                progressText.text = "逃离丧家犬老大：已开启 "
-                    + (puzzle != null ? puzzle.ActivatedCount : 0) + " / 4 个开关";
+                progressText.text = GameLocalization.Format("rubble.ui.progress",
+                    puzzle != null ? puzzle.ActivatedCount : 0);
             }
         }
 
         public void CompleteBattle()
         {
             if (!battleActive) return;
-            if (progressText != null) progressText.text = "尽快进入铁门离开";
+            if (progressText != null) progressText.text = GameLocalization.Get("rubble.ui.escape");
         }
 
         public bool PlayLoreDialogue(DialoguePage[] pages)
@@ -206,11 +205,33 @@ namespace RPG
             title.fontSize = 46;
             title.color = Color.white;
             title.alignment = TextAnchor.MiddleCenter;
-            title.text = "结局：梦想折翼";
+            title.text = GameLocalization.Get("rubble.ending.brokenDreams.title");
             RectTransform rect = title.rectTransform;
             rect.anchorMin = new Vector2(.5f, .5f);
             rect.anchorMax = new Vector2(.5f, .5f);
+            rect.anchoredPosition = new Vector2(0f, 235f);
             rect.sizeDelta = new Vector2(680f, 120f);
+
+            GameObject descriptionObject = new GameObject("Ending Description");
+            descriptionObject.transform.SetParent(canvasObject.transform, false);
+            Text description = descriptionObject.AddComponent<Text>();
+            description.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            description.fontSize = 25;
+            description.color = Color.white;
+            description.alignment = TextAnchor.MiddleCenter;
+            description.text = string.Join("\n\n", new[]
+            {
+                GameLocalization.Get("rubble.ending.brokenDreams.1"),
+                GameLocalization.Get("rubble.ending.brokenDreams.2"),
+                GameLocalization.Get("rubble.ending.brokenDreams.3"),
+                GameLocalization.Get("rubble.ending.brokenDreams.4"),
+                GameLocalization.Get("rubble.ending.brokenDreams.5")
+            });
+            RectTransform descriptionRect = description.rectTransform;
+            descriptionRect.anchorMin = new Vector2(.5f, .5f);
+            descriptionRect.anchorMax = new Vector2(.5f, .5f);
+            descriptionRect.anchoredPosition = new Vector2(0f, -25f);
+            descriptionRect.sizeDelta = new Vector2(1100f, 470f);
         }
     }
 }

@@ -8,23 +8,18 @@ namespace RPG
     {
         private const string DriedMeatId = "apartment.driedMeat";
 
-        private static readonly DialoguePage[] DiscoveryPages =
+        private static readonly string[] DiscoveryKeys =
         {
-            new DialoguePage("主角", "那里有什么东西在动。"),
-            new DialoguePage("主角", "第一眼，真的像一只小黑猫。\n它蜷缩在最大的荧光蘑菇下，正好奇地打量着我。"),
-            new DialoguePage("主角", "但它不是猫。耳朵的位置是两片薄膜般的结构，\n尾巴尖还燃着一小簇冰蓝色的火焰。")
+            "thirteen.encounter.discovery.1", "thirteen.encounter.discovery.2",
+            "thirteen.encounter.discovery.3"
         };
 
-        private static readonly DialoguePage[] GiftPages =
+        private static readonly string[] GiftKeys =
         {
-            new DialoguePage("主角", "它没有看肉干，反而慢慢靠近了我。"),
-            new DialoguePage("主角", "它抬起前爪，小心翼翼地碰了碰我的手指。\n冰凉，还有一点粗糙。"),
-            new DialoguePage("主角", "它又跑回蘑菇丛，叼来一块内部仿佛流淌着星光的晶石。\n这是......你的礼物吗？"),
-            new DialoguePage("主角", "我……我没有恶意。"),
-            new DialoguePage("？？？", "（它发出一个由三个高低不同音调组成的清脆音节。）"),
-            new DialoguePage("主角", "十三……\n这个名字，怎么会忽然出现在我脑子里？"),
-            new DialoguePage("十三", "（它歪了歪头，耳膜轻轻转动。）"),
-            new DialoguePage("主角", "我伸出手，掌心向上。\n十三极轻地舔了一下我的指尖。")
+            "thirteen.encounter.gift.1", "thirteen.encounter.gift.2",
+            "thirteen.encounter.gift.3", "thirteen.encounter.gift.4",
+            "thirteen.encounter.gift.5", "thirteen.encounter.gift.6",
+            "thirteen.encounter.gift.7", "thirteen.encounter.gift.8"
         };
 
         [SerializeField] private Transform thirteenVisual;
@@ -54,7 +49,7 @@ namespace RPG
             DialogueController dialogue = player != null ? player.GetComponent<DialogueController>() : null;
             if (player == null || dialogue == null || dialogue.IsPlaying || thirteenVisual == null) return;
             if (Vector2.Distance(player.transform.position, thirteenVisual.position) > 2.3f) return;
-            discoveryStarted = dialogue.StartDialogue(DiscoveryPages, BeginOffering);
+            discoveryStarted = dialogue.StartDialogue(CreateDiscoveryPages(), BeginOffering);
         }
 
         public static bool TryOfferSelectedDriedMeat(PlayerInventory inventory)
@@ -81,7 +76,7 @@ namespace RPG
             DialogueController dialogue = inventory.GetComponent<DialogueController>();
             if (dialogue != null)
             {
-                dialogue.StartDialogue(GiftPages, BeginReturnHome);
+                dialogue.StartDialogue(CreateGiftPages(), BeginReturnHome);
             }
 
             return true;
@@ -148,13 +143,38 @@ namespace RPG
             hintText.fontSize = 24;
             hintText.color = Color.white;
             hintText.alignment = TextAnchor.UpperCenter;
-            hintText.text = "选中肉干后，在十三面前按 Q 放下肉干";
+            hintText.text = GameLocalization.Get("thirteen.ui.offerDriedMeat");
             RectTransform rect = hintText.rectTransform;
             rect.anchorMin = new Vector2(.5f, 1f);
             rect.anchorMax = new Vector2(.5f, 1f);
             rect.pivot = new Vector2(.5f, 1f);
             rect.anchoredPosition = new Vector2(0f, -28f);
             rect.sizeDelta = new Vector2(760f, 48f);
+        }
+
+        private static DialoguePage[] CreateDiscoveryPages()
+        {
+            DialoguePage[] pages = new DialoguePage[DiscoveryKeys.Length];
+            for (int index = 0; index < DiscoveryKeys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(DiscoveryKeys[index]));
+            }
+
+            return pages;
+        }
+
+        private static DialoguePage[] CreateGiftPages()
+        {
+            DialoguePage[] pages = new DialoguePage[GiftKeys.Length];
+            string unknown = GameLocalization.Get("thirteen.speaker.unknown");
+            string thirteen = GameLocalization.Get("thirteen.speaker.thirteen");
+            for (int index = 0; index < GiftKeys.Length; index++)
+            {
+                string speaker = index == 4 ? unknown : index == 6 ? thirteen : "主角";
+                pages[index] = new DialoguePage(speaker, GameLocalization.Get(GiftKeys[index]));
+            }
+
+            return pages;
         }
     }
 }

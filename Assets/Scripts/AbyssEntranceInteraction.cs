@@ -4,28 +4,24 @@ namespace RPG
 {
     public sealed class AbyssEntranceInteraction : MonoBehaviour, IInvestigationHandler
     {
-        private static readonly DialoguePage[] OpeningPages =
+        private static readonly string[] OpeningKeys =
         {
-            new DialoguePage("主角", "......没想到竟从那么高的地方掉下来......"),
-            new DialoguePage("主角", "并非想象中地狱般的景象。"),
-            new DialoguePage("主角", "没有熔岩，没有硫磺味。取而代之的是一种潮湿的、带着奇异甜腥的泥土气息。")
+            "abyss.entrance.opening.1", "abyss.entrance.opening.2", "abyss.entrance.opening.3"
         };
 
-        private static readonly DialoguePage[] MossPages =
+        private static readonly string[] MossKeys =
         {
-            new DialoguePage("主角", "这些发出幽蓝荧光的苔藓像是倒挂的星河。")
+            "abyss.entrance.moss"
         };
 
-        private static readonly DialoguePage[] CrystalPages =
+        private static readonly string[] CrystalKeys =
         {
-            new DialoguePage("主角", "这些散落的温热晶体轻轻震颤，发出风铃般的细微叮咚声。")
+            "abyss.entrance.crystal"
         };
 
-        private static readonly DialoguePage[] PassagePages =
+        private static readonly string[] PassageKeys =
         {
-            new DialoguePage("主角", "这是一个完全陌生的生态系统。"),
-            new DialoguePage("主角", "寂静，美丽，带着地底深处的呼吸节奏。"),
-            new DialoguePage("主角", "或许，我原本来自此地。")
+            "abyss.entrance.passage.1", "abyss.entrance.passage.2", "abyss.entrance.passage.3"
         };
 
         [SerializeField] private bool openingPlayed;
@@ -60,23 +56,34 @@ namespace RPG
             DialogueController dialogue = FindObjectOfType<DialogueController>();
             if (kind == InvestigationKind.AbyssGlowingMoss)
             {
-                return dialogue.StartDialogue(MossPages);
+                return dialogue.StartDialogue(CreatePages(MossKeys));
             }
 
             if (kind == InvestigationKind.AbyssWarmCrystal)
             {
-                return dialogue.StartDialogue(CrystalPages);
+                return dialogue.StartDialogue(CreatePages(CrystalKeys));
             }
 
-            return dialogue.StartDialogue(PassagePages, TransitionToMushroomCave);
+            return dialogue.StartDialogue(CreatePages(PassageKeys), TransitionToMushroomCave);
         }
 
         private void PlayOpening(Transform player)
         {
             if (openingPlayed || player == null) return;
             DialogueController dialogue = player.GetComponent<DialogueController>();
-            if (dialogue == null || !dialogue.StartDialogue(OpeningPages)) return;
+            if (dialogue == null || !dialogue.StartDialogue(CreatePages(OpeningKeys))) return;
             openingPlayed = true;
+        }
+
+        private static DialoguePage[] CreatePages(string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage("主角", GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
 
         private static void TransitionToMushroomCave()

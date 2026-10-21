@@ -5,11 +5,6 @@ namespace RPG
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
     public sealed class GangDogLowMember : MonoBehaviour
     {
-        private static readonly DialoguePage[] BlockPages =
-        {
-            new DialoguePage("丧家犬", "这是我们的地盘，没你过去的份！")
-        };
-
         private static bool hasShownBlockDialogue;
         [SerializeField] private Vector2 patrolMin;
         [SerializeField] private Vector2 patrolMax;
@@ -48,7 +43,11 @@ namespace RPG
                 {
                     DialogueController dialogue = player.GetComponent<DialogueController>();
                     if (dialogue != null && !dialogue.IsPlaying
-                        && dialogue.StartDialogue(BlockPages))
+                        && dialogue.StartDialogue(new[]
+                        {
+                            new DialoguePage(GameLocalization.Get("suburbs.speaker.strayDogs"),
+                                GameLocalization.Get("suburbs.road1.lowMember.block"))
+                        }))
                     {
                         hasShownBlockDialogue = true;
                     }

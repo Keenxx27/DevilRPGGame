@@ -8,20 +8,16 @@ namespace RPG
         [SerializeField] private bool isTuitionReceipt;
         [SerializeField] private bool hasBeenRead;
 
-        private static readonly DialoguePage[] TuitionPages =
+        private static readonly string[] TuitionKeys =
         {
-            new DialoguePage("主角", "其实我们大学的学费也不贵啊……"),
-            new DialoguePage("主角", "毕竟现代社会人人都想当高收入的恶魔猎人，\n已经不怎么重视文化教育了。"),
-            new DialoguePage("主角", "那你又有什么理由杀我？"),
-            new DialoguePage("丧家犬老大", "……")
+            "rubble.lore.tuition.1", "rubble.lore.tuition.2",
+            "rubble.lore.tuition.3", "rubble.lore.tuition.4"
         };
 
-        private static readonly DialoguePage[] DebtPages =
+        private static readonly string[] DebtKeys =
         {
-            new DialoguePage("主角", "这账单上的东西不太一般啊，不是水电费，而是……"),
-            new DialoguePage("主角", "购买大牌恶魔猎人周边的消费。"),
-            new DialoguePage("主角", "看来你给儿子凑的钱好像不只是学费。"),
-            new DialoguePage("丧家犬老大", "……")
+            "rubble.lore.debt.1", "rubble.lore.debt.2",
+            "rubble.lore.debt.3", "rubble.lore.debt.4"
         };
 
         public void Configure(RubbleBossEncounter owner, bool tuitionReceipt)
@@ -39,9 +35,22 @@ namespace RPG
         public bool TryInvestigate(InvestigationKind kind)
         {
             if (!CanInvestigate(kind)) return false;
-            if (!encounter.PlayLoreDialogue(isTuitionReceipt ? TuitionPages : DebtPages)) return false;
+            if (!encounter.PlayLoreDialogue(CreatePages(isTuitionReceipt ? TuitionKeys : DebtKeys))) return false;
             hasBeenRead = true;
             return true;
+        }
+
+        private static DialoguePage[] CreatePages(string[] keys)
+        {
+            DialoguePage[] pages = new DialoguePage[keys.Length];
+            string bossName = GameLocalization.Get("rubble.speaker.strayDogsBoss");
+            for (int index = 0; index < keys.Length; index++)
+            {
+                pages[index] = new DialoguePage(index == keys.Length - 1 ? bossName : "主角",
+                    GameLocalization.Get(keys[index]));
+            }
+
+            return pages;
         }
     }
 }

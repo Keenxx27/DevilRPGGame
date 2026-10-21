@@ -183,7 +183,7 @@ public static class ThirteenCharacterInstaller
         renderer.color = Color.white;
         renderer.sortingOrder = legacyRenderer.sortingOrder;
         renderer.flipX = false;
-        visual.localPosition = Vector3.zero;
+        visual.localPosition = new Vector3(-1.1f, -.83f, 0f);
         visual.localScale = Vector3.one;
         legacyRenderer.enabled = false;
         EditorSceneManager.SaveScene(scene);

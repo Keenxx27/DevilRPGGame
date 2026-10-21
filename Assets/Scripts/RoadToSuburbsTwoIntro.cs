@@ -4,12 +4,6 @@ namespace RPG
 {
     public sealed class RoadToSuburbsTwoIntro : MonoBehaviour
     {
-        private static readonly DialoguePage[] Pages =
-        {
-            new DialoguePage("主角", "更加复杂的道路。"),
-            new DialoguePage("主角", "话说回来……自言自语的现象越来越严重了。")
-        };
-
         private bool hasPlayed;
 
         private void Update()
@@ -20,7 +14,11 @@ namespace RPG
 
             Vector2 position = dialogue.transform.position;
             if (position.x < 275f || position.y < .2f) return;
-            hasPlayed = dialogue.StartDialogue(Pages);
+            hasPlayed = dialogue.StartDialogue(new[]
+            {
+                new DialoguePage("主角", GameLocalization.Get("suburbs.road2.intro.1")),
+                new DialoguePage("主角", GameLocalization.Get("suburbs.road2.intro.2"))
+            });
         }
     }
 }

@@ -6,8 +6,6 @@ namespace RPG
 {
     public class DialogueHUD : MonoBehaviour
     {
-        private const string Hint = "R 继续　Space 跳过";
-
         [SerializeField] private GameObject panel;
         [SerializeField] private Text speakerText;
         [SerializeField] private Text bodyText;
@@ -50,7 +48,7 @@ namespace RPG
 
             speakerText.text = PlayerChosenName.ResolveDialogueSpeaker(speaker ?? string.Empty);
             bodyText.text = visibleText ?? string.Empty;
-            hintText.text = Hint;
+            hintText.text = GameLocalization.Get("dialogue.hint");
             Color hintColor = hintText.color;
             hintColor.a = canAdvance ? 1f : 0.45f;
             hintText.color = hintColor;

@@ -42,14 +42,19 @@ namespace RPG
             if (player == null) return;
 
             float distance = Vector2.Distance(transform.position, player.transform.position);
-            if (distance > ResetDistance)
+            Collider2D activationArea = GetComponent<Collider2D>();
+            if (!IsWithinActivationArea(player.transform.position))
             {
-                hasActivated = false;
-                stayTimer = 0f;
+                if (activationArea != null || distance > ResetDistance)
+                {
+                    hasActivated = false;
+                    stayTimer = 0f;
+                }
+
                 return;
             }
 
-            if (hasActivated || distance > ActivationDistance) return;
+            if (hasActivated) return;
             DialogueController dialogue = player.GetComponent<DialogueController>();
             if (dialogue == null || dialogue.IsPlaying) return;
 
@@ -60,6 +65,14 @@ namespace RPG
             if (transition == null) return;
             hasActivated = true;
             transition.RequestTransition(destinationScene, destinationId);
+        }
+
+        private bool IsWithinActivationArea(Vector2 playerPosition)
+        {
+            Collider2D activationArea = GetComponent<Collider2D>();
+            return activationArea != null
+                ? activationArea.OverlapPoint(playerPosition)
+                : Vector2.Distance(transform.position, playerPosition) <= ActivationDistance;
         }
     }
 }

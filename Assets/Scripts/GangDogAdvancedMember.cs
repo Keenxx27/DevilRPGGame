@@ -11,11 +11,6 @@ namespace RPG
         public const float SwingDuration = .35f;
         private const float CaptureDistance = .8f;
         private const float SwingMissCooldown = .3f;
-        private static readonly DialoguePage[] FirstCapturePages =
-        {
-            new DialoguePage("丧家犬", "不把你当恶魔拆了卖已经算好的了，滚回去！")
-        };
-
         private static bool hasShownFirstCaptureDialogue;
         private static bool captureInProgress;
         [SerializeField] private Vector2 patrolMin;
@@ -124,7 +119,11 @@ namespace RPG
                     return;
                 }
 
-                if (dialogue.StartDialogue(FirstCapturePages, BeginBlackoutAndReset))
+                if (dialogue.StartDialogue(new[]
+                    {
+                        new DialoguePage(GameLocalization.Get("suburbs.speaker.strayDogs"),
+                            GameLocalization.Get("suburbs.road2.advancedMember.capture"))
+                    }, BeginBlackoutAndReset))
                 {
                     hasShownFirstCaptureDialogue = true;
                     captureInProgress = true;

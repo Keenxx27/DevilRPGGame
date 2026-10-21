@@ -15,6 +15,8 @@ namespace RPG.Tests
         public void TearDown()
         {
             PlayerChosenName.Set(null);
+            PlayerPrefs.DeleteKey(GameLocalization.PreferenceKey);
+            GameLocalization.Reload();
             if (root != null)
             {
                 Object.DestroyImmediate(root);
@@ -43,6 +45,17 @@ namespace RPG.Tests
             hud.SetPage("主角", "测试", true);
 
             Assert.That(hint.color.a, Is.EqualTo(1f).Within(0.001f));
+        }
+
+        [Test]
+        public void SetPage_UsesLocalizedDialogueHint()
+        {
+            GameLocalization.SetLanguage(GameLanguage.Japanese);
+            DialogueHUD hud = CreateHud(out _, out _, out _, out Text hint);
+
+            hud.SetPage("主角", "测试", true);
+
+            Assert.That(hint.text, Is.EqualTo("R 次へ　Space スキップ"));
         }
 
         [Test]

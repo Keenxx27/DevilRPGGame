@@ -74,7 +74,7 @@ namespace RPG
         private void CreatePausePage()
         {
             pauseCanvas = new GameObject("Pause Canvas");
-            DontDestroyOnLoad(pauseCanvas);
+            if (Application.isPlaying) DontDestroyOnLoad(pauseCanvas);
             Canvas canvas = pauseCanvas.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 60;
@@ -94,7 +94,7 @@ namespace RPG
             textObject.transform.SetParent(pauseCanvas.transform, false);
             Text text = textObject.AddComponent<Text>();
             text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.text = "游戏已暂停\n\n按 Esc 继续";
+            text.text = GameLocalization.Get("pause.message");
             text.fontSize = 40;
             text.color = Color.white;
             text.alignment = TextAnchor.MiddleCenter;
