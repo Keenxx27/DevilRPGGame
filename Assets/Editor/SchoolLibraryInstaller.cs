@@ -10,9 +10,9 @@ using RPG;
 public static class SchoolLibraryInstaller
 {
     private const string ClassroomScenePath = "Assets/Scenes/SchoolClassroom.unity";
-    private const string CorridorScenePath = "Assets/Scenes/SchoolCorridor.unity";
-    private const string LibraryScenePath = "Assets/Scenes/SchoolLibrary.unity";
-    private const string StorageRoomScenePath = "Assets/Scenes/SchoolStorageRoom.unity";
+    private const string CorridorScenePath = "Assets/Scenes/2_SchoolCorridor.unity";
+    private const string LibraryScenePath = "Assets/Scenes/3_SchoolLibrary.unity";
+    private const string StorageRoomScenePath = "Assets/Scenes/4_SchoolStorageRoom.unity";
     private const string ApartmentEntranceScenePath = "Assets/Scenes/ApartmentEntrance.unity";
     private const string ApartmentLivingRoomScenePath = "Assets/Scenes/ApartmentLivingRoom.unity";
     private const string ApartmentKitchenScenePath = "Assets/Scenes/ApartmentKitchen.unity";
@@ -7253,7 +7253,7 @@ public static class SchoolLibraryInstaller
         DoorExitPortal portal = portalObject.GetComponent<DoorExitPortal>()
             ?? portalObject.AddComponent<DoorExitPortal>();
         SetReference(portal, "door", door);
-        SetString(portal, "destinationScene", "SchoolStorageRoom");
+        SetString(portal, "destinationScene", "4_SchoolStorageRoom");
         SetString(portal, "destinationId", "StorageRoomFromCorridor");
 
         GameObject spawnObject = FindOptionalInScene(corridor, "CorridorFromStorage");

@@ -114,9 +114,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
-        width: 48
-        height: 64
+        y: 132
+        width: 57
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -135,9 +135,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
-        width: 48
-        height: 64
+        y: 69
+        width: 58
+        height: 61
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -157,8 +157,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 48
-        height: 64
+        width: 58
+        height: 68
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,13 +176,13 @@ TextureImporter:
       name: StudentB_Idle_Up
       rect:
         serializedVersion: 2
-        x: 48
-        y: 128
-        width: 48
-        height: 64
+        x: 61
+        y: 131
+        width: 35
+        height: 61
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 1, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -197,13 +197,13 @@ TextureImporter:
       name: StudentB_Walk_Up_A
       rect:
         serializedVersion: 2
-        x: 48
-        y: 64
-        width: 48
-        height: 64
+        x: 61
+        y: 70
+        width: 35
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 3, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -218,10 +218,10 @@ TextureImporter:
       name: StudentB_Walk_Up_B
       rect:
         serializedVersion: 2
-        x: 48
+        x: 64
         y: 0
-        width: 48
-        height: 64
+        width: 32
+        height: 68
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -239,13 +239,13 @@ TextureImporter:
       name: StudentB_Idle_Right
       rect:
         serializedVersion: 2
-        x: 96
-        y: 128
-        width: 48
-        height: 64
+        x: 102
+        y: 131
+        width: 42
+        height: 61
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 1, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -261,9 +261,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 64
+        y: 70
         width: 48
-        height: 64
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -281,13 +281,13 @@ TextureImporter:
       name: StudentB_Walk_Right_B
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
-        width: 48
-        height: 64
+        x: 103
+        y: 1
+        width: 36
+        height: 67
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 1, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -303,12 +303,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 128
+        y: 132
         width: 48
-        height: 64
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 1, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -324,9 +324,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 64
+        y: 69
         width: 48
-        height: 64
+        height: 62
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -347,7 +347,7 @@ TextureImporter:
         x: 144
         y: 0
         width: 48
-        height: 64
+        height: 68
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

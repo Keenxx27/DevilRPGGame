@@ -7,6 +7,7 @@ namespace RPG
     {
         [SerializeField, Min(0.01f)] private float flightDuration = 0.3f;
         [SerializeField, Min(0.01f)] private float flightDistance = 2f;
+        [SerializeField] private Vector2 flightCollisionSize = new Vector2(0.7f, 0.7f);
 
         private WorldItem worldItem;
         private BoxCollider2D chairCollider;
@@ -92,7 +93,7 @@ namespace RPG
                 return false;
             }
 
-            Vector2 size = Vector2.Scale(chairCollider.size,
+            Vector2 size = Vector2.Scale(flightCollisionSize,
                 new Vector2(Mathf.Abs(transform.lossyScale.x),
                     Mathf.Abs(transform.lossyScale.y)));
             ContactFilter2D filter = new ContactFilter2D();

@@ -11,8 +11,8 @@ namespace RPG.Tests
 {
     public class SchoolLibrarySceneTests
     {
-        private const string LibraryScenePath = "Assets/Scenes/SchoolLibrary.unity";
-        private const string CorridorScenePath = "Assets/Scenes/SchoolCorridor.unity";
+        private const string LibraryScenePath = "Assets/Scenes/3_SchoolLibrary.unity";
+        private const string CorridorScenePath = "Assets/Scenes/2_SchoolCorridor.unity";
 
         [Test]
         public void BuildSettings_ContainsEnabledSchoolLibraryScene()
@@ -88,7 +88,7 @@ namespace RPG.Tests
         public void CorridorAndLibrary_ConfigureMatchingBidirectionalDoorTransitions()
         {
             Scene corridor = EditorSceneManager.OpenScene(CorridorScenePath, OpenSceneMode.Single);
-            AssertDoor(corridor, "Library Door", "SchoolLibrary", "LibraryFromCorridor");
+            AssertDoor(corridor, "Library Door", "3_SchoolLibrary", "LibraryFromCorridor");
             GameObject libraryDoor = Find(corridor, "Library Door");
             Assert.That(libraryDoor.transform.position,
                 Is.EqualTo(new Vector3(27f, 2.5f, 0f)), "Library Door");
@@ -97,11 +97,11 @@ namespace RPG.Tests
             AssertSpawn(corridor, "CorridorFromLibrary", new Vector2(27f, 1.1f),
                 new Vector3(29f, 0f, -10f));
             AssertJanitorRestRoomDoor(corridor);
-            AssertDoor(corridor, "Storage Room Door", "SchoolStorageRoom", "StorageRoomFromCorridor");
+            AssertDoor(corridor, "Storage Room Door", "4_SchoolStorageRoom", "StorageRoomFromCorridor");
 
             Scene library = EditorSceneManager.OpenScene(LibraryScenePath, OpenSceneMode.Single);
             AssertAutomaticTransition(library, "Library To Corridor Doorway",
-                new Vector2(0f, -5.8f), "SchoolCorridor", "CorridorFromLibrary");
+                new Vector2(0f, -5.8f), "2_SchoolCorridor", "CorridorFromLibrary");
             AssertSpawn(library, "LibraryFromCorridor", new Vector2(0f, -4.7f),
                 new Vector3(0f, 0f, -10f));
         }

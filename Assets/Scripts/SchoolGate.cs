@@ -39,12 +39,12 @@ namespace RPG
         public bool TryInvestigate(InvestigationKind kind)
         {
             if (!CanInvestigate(kind)) return false;
-            if (!SceneManager.GetSceneByName("SchoolLibrary").isLoaded)
+            if (!SceneManager.GetSceneByName("3_SchoolLibrary").isLoaded)
             {
                 return dialogueController.StartDialogue(beforeLibraryPages);
             }
 
-            LibraryBookPuzzle puzzle = FindObjectOfType<LibraryBookPuzzle>();
+            LibraryBookPuzzle puzzle = FindObjectOfType<LibraryBookPuzzle>(true);
             if (puzzle == null || !puzzle.HasReadCompletePage)
             {
                 return dialogueController.StartDialogue(beforePagePages);

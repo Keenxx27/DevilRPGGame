@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ee563e779bcb441a9ec64a9a99a4b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destinationScene: SchoolClassroom
+  destinationScene: 1_SchoolClassroom
   destinationId: ClassroomFromCorridor
 --- !u!1 &287006297
 GameObject:
@@ -1143,7 +1143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   door: {fileID: 3000000623}
-  destinationScene: SchoolStorageRoom
+  destinationScene: 4_SchoolStorageRoom
   destinationId: StorageRoomFromCorridor
 --- !u!61 &1043622036
 BoxCollider2D:
@@ -2199,7 +2199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   door: {fileID: 3000000603}
-  destinationScene: SchoolLibrary
+  destinationScene: 3_SchoolLibrary
   destinationId: LibraryFromCorridor
 --- !u!61 &1665575981
 BoxCollider2D:

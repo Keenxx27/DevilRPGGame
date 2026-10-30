@@ -113,9 +113,9 @@ TextureImporter:
       name: Professor_Idle_Down
       rect:
         serializedVersion: 2
-        x: 0
+        x: 8
         y: 128
-        width: 48
+        width: 40
         height: 64
       alignment: 9
       pivot: {x: 0.5, y: 0}

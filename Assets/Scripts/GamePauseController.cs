@@ -1,108 +1,40 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace RPG
 {
+    /// <summary>
+    /// Keeps the existing scene component identity, but Escape now exits the game instead of
+    /// opening the former pause overlay.
+    /// </summary>
     public sealed class GamePauseController : MonoBehaviour
     {
-        private const string InstructionsSceneName = "GameInstructions";
-        private const string NameEntrySceneName = "NameEntry";
-        private GameObject pauseCanvas;
-        private MainCharacterMovement movement;
-        private PlayerInteraction interaction;
-        private PlayerInventory inventory;
-        private DialogueController dialogue;
-        private bool movementWasEnabled;
-        private bool interactionWasEnabled;
-        private bool inventoryWasEnabled;
-        private bool dialogueWasEnabled;
-        private bool isPaused;
+        private static bool quitting;
 
         private void Awake()
         {
+            quitting = false;
             DontDestroyOnLoad(gameObject);
-            CreatePausePage();
         }
 
         private void Update()
         {
-            string activeSceneName = SceneManager.GetActiveScene().name;
-            if (activeSceneName == InstructionsSceneName || activeSceneName == NameEntrySceneName) return;
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (!quitting && Input.GetKeyDown(KeyCode.Escape))
             {
-                SetPaused(!isPaused);
+                QuitGame();
             }
         }
 
-        private void SetPaused(bool paused)
+        private static void QuitGame()
         {
-            isPaused = paused;
-            if (paused)
-            {
-                CachePlayerComponents();
-                Time.timeScale = 0f;
-                pauseCanvas.SetActive(true);
-                return;
-            }
-
+            quitting = true;
             Time.timeScale = 1f;
-            pauseCanvas.SetActive(false);
-            RestorePlayerComponents();
-        }
 
-        private void CachePlayerComponents()
-        {
-            movement = FindObjectOfType<MainCharacterMovement>();
-            interaction = FindObjectOfType<PlayerInteraction>();
-            inventory = FindObjectOfType<PlayerInventory>();
-            dialogue = FindObjectOfType<DialogueController>();
-            if (movement != null) { movementWasEnabled = movement.enabled; movement.enabled = false; }
-            if (interaction != null) { interactionWasEnabled = interaction.enabled; interaction.enabled = false; }
-            if (inventory != null) { inventoryWasEnabled = inventory.enabled; inventory.enabled = false; }
-            if (dialogue != null) { dialogueWasEnabled = dialogue.enabled; dialogue.enabled = false; }
-        }
-
-        private void RestorePlayerComponents()
-        {
-            if (movement != null) movement.enabled = movementWasEnabled;
-            if (interaction != null) interaction.enabled = interactionWasEnabled;
-            if (inventory != null) inventory.enabled = inventoryWasEnabled;
-            if (dialogue != null) dialogue.enabled = dialogueWasEnabled;
-        }
-
-        private void CreatePausePage()
-        {
-            pauseCanvas = new GameObject("Pause Canvas");
-            if (Application.isPlaying) DontDestroyOnLoad(pauseCanvas);
-            Canvas canvas = pauseCanvas.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 60;
-            UiScaleSettings.Configure(pauseCanvas.AddComponent<CanvasScaler>());
-
-            GameObject background = new GameObject("Pause Background");
-            background.transform.SetParent(pauseCanvas.transform, false);
-            Image image = background.AddComponent<Image>();
-            image.color = new Color(0f, 0f, 0f, .8f);
-            RectTransform backgroundRect = image.rectTransform;
-            backgroundRect.anchorMin = Vector2.zero;
-            backgroundRect.anchorMax = Vector2.one;
-            backgroundRect.offsetMin = Vector2.zero;
-            backgroundRect.offsetMax = Vector2.zero;
-
-            GameObject textObject = new GameObject("Pause Text");
-            textObject.transform.SetParent(pauseCanvas.transform, false);
-            Text text = textObject.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.text = GameLocalization.Get("pause.message");
-            text.fontSize = 40;
-            text.color = Color.white;
-            text.alignment = TextAnchor.MiddleCenter;
-            RectTransform textRect = text.rectTransform;
-            textRect.anchorMin = new Vector2(.5f, .5f);
-            textRect.anchorMax = new Vector2(.5f, .5f);
-            textRect.sizeDelta = new Vector2(640f, 240f);
-            pauseCanvas.SetActive(false);
+#if UNITY_EDITOR
+            // During testing, stop Play Mode without closing the Unity Editor itself.
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }

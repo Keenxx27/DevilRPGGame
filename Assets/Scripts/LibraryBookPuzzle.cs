@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RPG
 {
@@ -12,10 +13,7 @@ namespace RPG
         private const string LibraryCardItemId = "library.card";
         private const string BroomItemId = "storage.broom";
         private DialoguePage[] openingPages;
-        private DialoguePage[] firstBookcasePages;
-        private DialoguePage[] bookcasePagesOne;
-        private DialoguePage[] bookcasePagesTwo;
-        private DialoguePage[] bookcasePagesThree;
+        private DialoguePage[] bookcasePages;
         private DialoguePage[] chairPages;
         private DialoguePage[] wallPages;
         private DialoguePage[] secondFragmentPages;
@@ -42,19 +40,15 @@ namespace RPG
         private int chairPushes;
         private int placedFragments;
         private bool openingFinished;
-        private bool chairPrompted;
         private bool chairMoving;
         private bool wallPrompted;
         private bool wallOpened;
         private bool placementFinished;
-        private int gluePulls;
         private bool counterInvestigated;
-        private bool broomPrompted;
         private bool gluePulling;
         private bool gluePulledOut;
-        private bool gluePrompted;
-        private int glueApplications;
         private bool pageCompleted;
+        private bool endingStarted;
 
         public bool HasDiscoveredGlue => counterInvestigated;
         public bool HasReadCompletePage => pageCompleted;
@@ -68,11 +62,9 @@ namespace RPG
                 new DialoguePage("主角", GameLocalization.Get("library.opening.3")),
                 new DialoguePage("主角", GameLocalization.Get("library.opening.4"))
             };
-            firstBookcasePages = BuildPages("library.environment.bookcase.first");
-            bookcasePagesOne = BuildPages("library.environment.bookcase.1");
-            bookcasePagesTwo = BuildPages("library.environment.bookcase.2");
-            bookcasePagesThree = BuildPages("library.environment.bookcase.4.1",
-                "library.environment.bookcase.4.2");
+            bookcasePages = BuildPages("library.environment.bookcase.first",
+                "library.environment.bookcase.1", "library.environment.bookcase.2",
+                "library.environment.bookcase.4.1", "library.environment.bookcase.4.2");
             chairPages = BuildPages("library.environment.chair");
             wallPages = BuildPages("library.environment.wall");
             secondFragmentPages = BuildPages("library.environment.fragments.second");
@@ -138,20 +130,21 @@ namespace RPG
             switch (kind)
             {
                 case InvestigationKind.LibraryBookcase:
-                    return bookcaseInvestigations < 4;
+                    return bookcaseInvestigations < 1;
                 case InvestigationKind.LibraryChair:
-                    return bookcaseInvestigations == 4 && chairPushes < 3 && !chairMoving;
+                    return chairPushes < 1 && !chairMoving;
                 case InvestigationKind.LibraryWallBrick:
-                    return bookcaseInvestigations == 4 && !wallOpened
-                        && (!wallPrompted || IsSelectedItemId(LibraryCardItemId));
+                    // Keep the brick target interactable after the first clue. Previously it
+                    // disappeared unless the library card was already selected, making E look
+                    // broken even while the player remained beside the brick.
+                    return !wallOpened;
                 case InvestigationKind.LibraryReadingTable:
                     return CanInvestigateReadingTable();
                 case InvestigationKind.LibraryCounter:
                     return !gluePulledOut && (!counterInvestigated
-                        || (IsSelectedItemId(BroomItemId) && !broomPrompted)
-                        || (IsSelectedItemId(BroomItemId) && gluePulls < 3 && !gluePulling));
+                        || (IsSelectedItemId(BroomItemId) && !gluePulling));
                 case InvestigationKind.LibraryCompletePage:
-                    return pageCompleted;
+                    return pageCompleted && !endingStarted;
                 default:
                     return false;
             }
@@ -169,7 +162,7 @@ namespace RPG
                 case InvestigationKind.LibraryReadingTable: return TryInvestigateReadingTable();
                 case InvestigationKind.LibraryCounter: return TryInvestigateCounter();
                 case InvestigationKind.LibraryCompletePage:
-                    return dialogueController.StartDialogue(revisitCompletedPagePages);
+                    return BeginPageEnding();
                 default: return false;
             }
         }
@@ -183,18 +176,13 @@ namespace RPG
 
         private bool TryInvestigateBookcase()
         {
-            DialoguePage[] pages = bookcaseInvestigations == 0 ? firstBookcasePages
-                : bookcaseInvestigations == 1 ? bookcasePagesOne
-                : bookcaseInvestigations == 2 ? bookcasePagesTwo : bookcasePagesThree;
-            int investigation = bookcaseInvestigations;
-            return dialogueController.StartDialogue(pages,
-                () => FinishBookcaseInvestigation(investigation));
+            return dialogueController.StartDialogue(bookcasePages, FinishBookcaseInvestigation);
         }
 
-        private void FinishBookcaseInvestigation(int investigation)
+        private void FinishBookcaseInvestigation()
         {
-            bookcaseInvestigations++;
-            if (investigation == 3 && !inventory.TryStore(firstFragment))
+            bookcaseInvestigations = 1;
+            if (!inventory.TryStore(firstFragment))
             {
                 firstFragment.gameObject.SetActive(true);
             }
@@ -202,17 +190,8 @@ namespace RPG
 
         private bool TryInvestigateChair()
         {
-            if (!chairPrompted)
-            {
-                return dialogueController.StartDialogue(chairPages, () =>
-                {
-                    chairPrompted = true;
-                    ShowPushHint();
-                });
-            }
-
-            StartCoroutine(PushChair());
-            return true;
+            return dialogueController.StartDialogue(chairPages,
+                () => StartCoroutine(PushChair()));
         }
 
         private IEnumerator PushChair()
@@ -229,16 +208,10 @@ namespace RPG
             }
 
             chair.position = end;
-            chairPushes++;
+            chairPushes = 1;
             chairMoving = false;
-            if (chairPushes == 3)
-            {
-                pushHint.Hide();
-                secondFragment.gameObject.SetActive(true);
-                yield break;
-            }
-
-            ShowPushHint();
+            pushHint.Hide();
+            secondFragment.gameObject.SetActive(true);
         }
 
         private bool TryInvestigateWallBrick()
@@ -246,6 +219,13 @@ namespace RPG
             if (!wallPrompted)
             {
                 return dialogueController.StartDialogue(wallPages, () => wallPrompted = true);
+            }
+
+            // The card remains the required tool, but pressing E without selecting it now
+            // repeats the clue instead of silently dropping the interaction.
+            if (!IsSelectedItemId(LibraryCardItemId))
+            {
+                return dialogueController.StartDialogue(wallPages);
             }
 
             wallOpened = true;
@@ -304,22 +284,27 @@ namespace RPG
 
         private bool CanInvestigateReadingTable()
         {
+            // Once the page is complete, the table must no longer compete with the
+            // completed page for the player's E interaction.
+            if (pageCompleted) return false;
+
             Transform nearestTable = FindNearestTable();
             bool canTakeFragment = inventory.SelectedItem == null && placedFragments > 0
-                && fragmentTable != null && nearestTable == fragmentTable && !gluePrompted;
+                && fragmentTable != null && nearestTable == fragmentTable;
+            bool canPlaceFragment = !placementFinished
+                && IsSelectedItemId(FragmentItemId);
             if (!placementFinished)
             {
-                return canTakeFragment;
+                return canTakeFragment || canPlaceFragment;
             }
 
             return canTakeFragment || (nearestTable == fragmentTable && !pageCompleted
-                && (!gluePrompted || glueApplications <= 3 || IsSelectedItemId(GlueItemId))
-                && (gluePrompted || IsSelectedItemId(GlueItemId)));
+                && IsSelectedItemId(GlueItemId));
         }
 
         private bool TryInvestigateReadingTable()
         {
-            if (inventory.SelectedItem == null && placedFragments > 0 && !gluePrompted)
+            if (inventory.SelectedItem == null && placedFragments > 0)
             {
                 return TryTakePlacedFragment();
             }
@@ -329,40 +314,150 @@ namespace RPG
                 return false;
             }
 
-            if (!gluePrompted)
+            return dialogueController.StartDialogue(gluePages, () =>
             {
-                return dialogueController.StartDialogue(gluePages, () =>
-                {
-                    inventory.TryRemoveSelectedById(GlueItemId, out _);
-                    gluePrompted = true;
-                    ShowGlueApplicationHint();
-                });
-            }
-
-            if (glueApplications < 3)
-            {
-                glueApplications++;
-                ShowGlueApplicationHint();
-                return true;
-            }
-
-            CompletePage();
-            return true;
+                if (inventory.TryRemoveSelectedById(GlueItemId, out _)) CompletePage();
+            });
         }
 
         private void CompletePage()
         {
             pageCompleted = true;
             pushHint.Hide();
-            for (int index = 1; index <= 3; index++)
+
+            Transform root = transform;
+            while (root.parent != null) root = root.parent;
+            foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
             {
-                GameObject fragment = FindObject("Placed Library Fragment " + index);
-                if (fragment != null) fragment.SetActive(false);
+                if (child.name.StartsWith("Placed Library Fragment "))
+                {
+                    child.gameObject.SetActive(false);
+                }
             }
+
+            placedFragmentItems.Clear();
+            placedFragments = 0;
 
             completePage.transform.position = fragmentTable.position;
             completePage.gameObject.SetActive(true);
-            dialogueController.StartDialogue(completedPagePages);
+        }
+
+        private bool BeginPageEnding()
+        {
+            if (endingStarted || completePage == null) return false;
+
+            endingStarted = true;
+            StartCoroutine(PlayPageEnding());
+            return true;
+        }
+
+        private IEnumerator PlayPageEnding()
+        {
+            MainCharacterMovement movement = inventory.GetComponent<MainCharacterMovement>();
+            PlayerInteraction interaction = inventory.GetComponent<PlayerInteraction>();
+            Rigidbody2D body = inventory.GetComponent<Rigidbody2D>();
+            if (movement != null) movement.enabled = false;
+            if (interaction != null) interaction.enabled = false;
+            inventory.enabled = false;
+            if (body != null) body.velocity = Vector2.zero;
+
+            GameObject canvasObject = new GameObject("Library Page Ending Canvas");
+            Canvas endingCanvas = canvasObject.AddComponent<Canvas>();
+            endingCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            endingCanvas.sortingOrder = 100;
+            UiScaleSettings.Configure(canvasObject.AddComponent<CanvasScaler>());
+
+            Image shade = CreateEndingImage("Background Shade", canvasObject.transform,
+                new Color(0f, 0f, 0f, 0f));
+            StretchToScreen(shade.rectTransform);
+
+            Image page = CreateEndingImage("Complete Page", canvasObject.transform, Color.white);
+            page.sprite = completePage.Icon;
+            page.preserveAspect = true;
+            page.rectTransform.anchorMin = page.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            page.rectTransform.pivot = new Vector2(.5f, .5f);
+            page.rectTransform.anchoredPosition = Vector2.zero;
+
+            const float unfoldDuration = 1.15f;
+            float elapsed = 0f;
+            while (elapsed < unfoldDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float progress = Mathf.SmoothStep(0f, 1f, elapsed / unfoldDuration);
+                page.rectTransform.sizeDelta = Vector2.Lerp(new Vector2(100f, 90f),
+                    new Vector2(760f, 690f), progress);
+                shade.color = new Color(0f, 0f, 0f, Mathf.Lerp(0f, .72f, progress));
+                yield return null;
+            }
+
+            yield return new WaitForSecondsRealtime(.55f);
+
+            Image glow = CreateEndingImage("Page White Light", canvasObject.transform, Color.white);
+            glow.sprite = CreateRadialGlowSprite();
+            glow.rectTransform.anchorMin = glow.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            glow.rectTransform.pivot = new Vector2(.5f, .5f);
+            glow.rectTransform.anchoredPosition = Vector2.zero;
+
+            const float glowDuration = 2.2f;
+            elapsed = 0f;
+            while (elapsed < glowDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float progress = Mathf.SmoothStep(0f, 1f, elapsed / glowDuration);
+                float size = Mathf.Lerp(24f, 2600f, progress);
+                glow.rectTransform.sizeDelta = new Vector2(size, size);
+                glow.color = new Color(1f, 1f, 1f, Mathf.Lerp(.15f, 1f, progress));
+                yield return null;
+            }
+
+            Image whiteScreen = CreateEndingImage("Permanent White Screen",
+                canvasObject.transform, Color.white);
+            StretchToScreen(whiteScreen.rectTransform);
+            whiteScreen.transform.SetAsLastSibling();
+        }
+
+        private static Image CreateEndingImage(string name, Transform parent, Color color)
+        {
+            GameObject imageObject = new GameObject(name);
+            imageObject.transform.SetParent(parent, false);
+            Image image = imageObject.AddComponent<Image>();
+            image.color = color;
+            image.raycastTarget = true;
+            return image;
+        }
+
+        private static void StretchToScreen(RectTransform rect)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+
+        private static Sprite CreateRadialGlowSprite()
+        {
+            const int size = 128;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            texture.name = "Library Page Radial Glow";
+            texture.wrapMode = TextureWrapMode.Clamp;
+            texture.filterMode = FilterMode.Bilinear;
+            Color[] pixels = new Color[size * size];
+            Vector2 center = new Vector2((size - 1) * .5f, (size - 1) * .5f);
+            float radius = size * .5f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float distance = Vector2.Distance(new Vector2(x, y), center) / radius;
+                    float alpha = 1f - Mathf.SmoothStep(.12f, 1f, distance);
+                    pixels[y * size + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+
+            texture.SetPixels(pixels);
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0f, 0f, size, size),
+                new Vector2(.5f, .5f), 100f);
         }
 
         private bool TryInvestigateCounter()
@@ -375,17 +470,8 @@ namespace RPG
                 });
             }
 
-            if (!broomPrompted)
-            {
-                return dialogueController.StartDialogue(broomPages, () =>
-                {
-                    broomPrompted = true;
-                    ShowGlueHint();
-                });
-            }
-
-            StartCoroutine(PullGlueBottle());
-            return true;
+            return dialogueController.StartDialogue(broomPages,
+                () => StartCoroutine(PullGlueBottle()));
         }
 
         private IEnumerator PullGlueBottle()
@@ -403,14 +489,7 @@ namespace RPG
             }
 
             glueBottle.transform.position = end;
-            gluePulls++;
             gluePulling = false;
-            if (gluePulls < 3)
-            {
-                ShowGlueHint();
-                yield break;
-            }
-
             gluePulledOut = true;
             pushHint.Hide();
             glueBottle.SetPickupEnabled(true);
@@ -420,21 +499,6 @@ namespace RPG
         private void HandleSecondFragmentPickedUp(WorldItem pickedUp)
         {
             if (pickedUp == secondFragment) dialogueController.StartDialogue(secondFragmentPages);
-        }
-
-        private void ShowPushHint()
-        {
-            pushHint.Show(GameLocalization.Format("library.hint.push", chairPushes));
-        }
-
-        private void ShowGlueHint()
-        {
-            pushHint.Show(GameLocalization.Format("library.hint.hook", gluePulls));
-        }
-
-        private void ShowGlueApplicationHint()
-        {
-            pushHint.Show(GameLocalization.Format("library.hint.apply", glueApplications));
         }
 
         private bool IsSelectedItemId(string itemId)

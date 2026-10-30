@@ -10,7 +10,7 @@ public static class SceneCameraAlignmentAudit
     public static void Audit()
     {
         string[] paths = {
-            "Assets/Scenes/SchoolCorridor.unity", "Assets/Scenes/SchoolLibrary.unity", "Assets/Scenes/SchoolStorageRoom.unity",
+            "Assets/Scenes/2_SchoolCorridor.unity", "Assets/Scenes/3_SchoolLibrary.unity", "Assets/Scenes/4_SchoolStorageRoom.unity",
             "Assets/Scenes/ApartmentEntrance.unity", "Assets/Scenes/ApartmentLivingRoom.unity", "Assets/Scenes/ApartmentKitchen.unity", "Assets/Scenes/ApartmentBathroom.unity", "Assets/Scenes/ApartmentLinChunbaoBedroom.unity", "Assets/Scenes/ApartmentProtagonistBedroom.unity",
             "Assets/Scenes/RoadToSuburbs1.unity", "Assets/Scenes/RoadToSuburbs2.unity", "Assets/Scenes/RubblePile.unity", "Assets/Scenes/AbyssEntrance.unity", "Assets/Scenes/FluorescentMushroomCave.unity", "Assets/Scenes/RoadHome.unity"
         };

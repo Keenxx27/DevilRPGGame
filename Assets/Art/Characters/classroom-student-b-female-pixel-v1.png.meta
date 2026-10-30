@@ -114,12 +114,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
-        width: 48
-        height: 64
+        y: 133
+        width: 57
+        height: 59
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 11, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -135,9 +135,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
-        width: 48
-        height: 64
+        y: 73
+        width: 55
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -157,8 +157,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 48
-        height: 64
+        width: 57
+        height: 72
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,13 +176,13 @@ TextureImporter:
       name: StudentD_Idle_Up
       rect:
         serializedVersion: 2
-        x: 48
-        y: 128
-        width: 48
-        height: 64
+        x: 61
+        y: 132
+        width: 35
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 2, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -197,13 +197,13 @@ TextureImporter:
       name: StudentD_Walk_Up_A
       rect:
         serializedVersion: 2
-        x: 48
-        y: 64
-        width: 48
-        height: 64
+        x: 64
+        y: 74
+        width: 32
+        height: 58
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 2, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -218,13 +218,13 @@ TextureImporter:
       name: StudentD_Walk_Up_B
       rect:
         serializedVersion: 2
-        x: 48
+        x: 60
         y: 0
-        width: 48
-        height: 64
+        width: 36
+        height: 73
       alignment: 9
       pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -240,9 +240,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 128
+        y: 133
         width: 48
-        height: 64
+        height: 59
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -261,9 +261,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 64
+        y: 72
         width: 48
-        height: 64
+        height: 60
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -284,7 +284,7 @@ TextureImporter:
         x: 96
         y: 0
         width: 48
-        height: 64
+        height: 71
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -303,9 +303,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 128
+        y: 133
         width: 48
-        height: 64
+        height: 59
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -324,9 +324,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 144
-        y: 64
+        y: 74
         width: 48
-        height: 64
+        height: 59
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -344,10 +344,10 @@ TextureImporter:
       name: StudentD_Walk_Left_B
       rect:
         serializedVersion: 2
-        x: 144
+        x: 142
         y: 0
-        width: 48
-        height: 64
+        width: 50
+        height: 72
       alignment: 9
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

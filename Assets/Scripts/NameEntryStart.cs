@@ -31,6 +31,8 @@ namespace RPG
 
         private void Update()
         {
+            if (GameStartShortcut.TrySkipToClassroom()) return;
+
             if (awaitingFeedback) return;
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {

@@ -6,11 +6,9 @@ namespace RPG
     {
         private const float ActivationDistance = .6f;
         private const float ResetDistance = 1.1f;
-        private const float RequiredStayDuration = .15f;
 
         [SerializeField] private string destinationScene;
         [SerializeField] private string destinationId;
-        private float stayTimer;
         private bool hasActivated;
 
         public void Configure(string sceneName, string spawnId)
@@ -48,21 +46,28 @@ namespace RPG
                 if (activationArea != null || distance > ResetDistance)
                 {
                     hasActivated = false;
-                    stayTimer = 0f;
                 }
 
                 return;
             }
 
+            TryActivate(player);
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            PlayerInteraction player = other.GetComponentInParent<PlayerInteraction>();
+            if (player != null) TryActivate(player);
+        }
+
+        private void TryActivate(PlayerInteraction player)
+        {
             if (hasActivated) return;
+
             DialogueController dialogue = player.GetComponent<DialogueController>();
-            if (dialogue == null || dialogue.IsPlaying) return;
-
-            stayTimer += Time.deltaTime;
-            if (stayTimer < RequiredStayDuration) return;
-
             MapTransitionService transition = player.GetComponent<MapTransitionService>();
-            if (transition == null) return;
+            if (dialogue == null || dialogue.IsPlaying || transition == null) return;
+
             hasActivated = true;
             transition.RequestTransition(destinationScene, destinationId);
         }

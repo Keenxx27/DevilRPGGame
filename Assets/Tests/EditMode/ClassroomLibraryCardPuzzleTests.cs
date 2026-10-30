@@ -102,12 +102,12 @@ namespace RPG.Tests
         }
 
         [Test]
-        public void FirstFlowerpotInvestigation_UsesApprovedPagesThenUnlocksAllChairs()
+        public void FirstFlowerpotInvestigation_KeepsInitiallyAvailableChairsPickupable()
         {
             PuzzleFixture fixture = CreateFixture();
             OpenSearching(fixture);
-            Assert.That(fixture.Chairs[0].GetComponent<WorldItem>().CanPickUp, Is.False);
-            Assert.That(fixture.Chairs[1].GetComponent<WorldItem>().CanPickUp, Is.False);
+            Assert.That(fixture.Chairs[0].GetComponent<WorldItem>().CanPickUp, Is.True);
+            Assert.That(fixture.Chairs[1].GetComponent<WorldItem>().CanPickUp, Is.True);
 
             Assert.That(fixture.Puzzle.TryInvestigate(
                 InvestigationKind.Flowerpot), Is.True);
@@ -124,7 +124,7 @@ namespace RPG.Tests
                 Is.EqualTo("生气又能怎么样……我总不能在教室里和所有人打一架。"));
             Assert.That(pages[6].Text,
                 Is.EqualTo("得找个够结实的东西，把花盆砸开。"));
-            Assert.That(fixture.Chairs[0].GetComponent<WorldItem>().CanPickUp, Is.False);
+            Assert.That(fixture.Chairs[0].GetComponent<WorldItem>().CanPickUp, Is.True);
 
             fixture.Dialogue.SkipDialogue();
 

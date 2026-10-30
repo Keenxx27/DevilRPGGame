@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#626fbd"/>
+  <g stroke="#f4b8a9" stroke-width="8" stroke-linecap="square" fill="none">
+    <path d="M800 450 L800 190"/>
+    <path d="M800 450 L1190 300"/>
+    <path d="M800 450 L1100 690"/>
+    <path d="M800 450 L500 690"/>
+    <path d="M800 450 L410 300"/>
+  </g>
+
+  <g fill="#283575" stroke="#ffd0be" stroke-width="7">
+    <rect x="560" y="360" width="480" height="180" rx="16"/>
+    <rect x="650" y="110" width="300" height="120" rx="12"/>
+    <rect x="1080" y="240" width="300" height="120" rx="12"/>
+    <rect x="950" y="650" width="300" height="120" rx="12"/>
+    <rect x="350" y="650" width="300" height="120" rx="12"/>
+    <rect x="220" y="240" width="300" height="120" rx="12"/>
+  </g>
+
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="800" y="466" font-size="52">Main Character</text>
+    <text x="800" y="184" font-size="42">Campus</text>
+    <text x="1230" y="314" font-size="42">Family</text>
+    <text x="1100" y="724" font-size="42">Authorities</text>
+    <text x="500" y="724" font-size="42">Outcasts</text>
+    <text x="370" y="314" font-size="42">Demons</text>
+  </g>
+
+</svg>

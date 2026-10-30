@@ -4,6 +4,29 @@ using UnityEngine.UI;
 
 namespace RPG
 {
+    public static class GameStartShortcut
+    {
+        private const string ClassroomSceneName = "1_SchoolClassroom";
+
+        public static bool TrySkipToClassroom()
+        {
+            if (!Input.GetKeyDown(KeyCode.O)) return false;
+
+            Time.timeScale = 1f;
+            GameLocalization.SetLanguage(GameLanguage.English);
+            PlayerChosenName.Set(null);
+
+            if (Object.FindObjectOfType<GamePauseController>() == null)
+            {
+                new GameObject("Game Pause Controller").AddComponent<GamePauseController>();
+            }
+
+            UiAudio.PlayConfirm();
+            SceneManager.LoadScene(ClassroomSceneName, LoadSceneMode.Single);
+            return true;
+        }
+    }
+
     public sealed class LanguageSelectionStart : MonoBehaviour
     {
         private const string NameEntrySceneName = "NameEntry";
@@ -24,6 +47,8 @@ namespace RPG
 
         private void Update()
         {
+            if (GameStartShortcut.TrySkipToClassroom()) return;
+
             if (Input.GetKeyDown(KeyCode.LeftArrow)) ChangeSelection(-1);
             if (Input.GetKeyDown(KeyCode.RightArrow)) ChangeSelection(1);
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Confirm();

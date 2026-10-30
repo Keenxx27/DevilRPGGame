@@ -7,7 +7,7 @@ namespace RPG
 {
     public sealed class GameInstructionsStart : MonoBehaviour
     {
-        private const string ClassroomSceneName = "SchoolClassroom";
+        private const string ClassroomSceneName = "1_SchoolClassroom";
         private const string InstructionsSceneName = "GameInstructions";
         private bool acceptsInput;
 

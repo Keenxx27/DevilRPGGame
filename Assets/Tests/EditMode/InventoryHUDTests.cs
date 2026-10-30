@@ -45,9 +45,13 @@ namespace RPG.Tests
             Assert.That(borders[0].enabled, Is.True);
             Assert.That(borders[1].enabled, Is.False);
             Assert.That(borders[2].enabled, Is.False);
+            Assert.That(borders[3].enabled, Is.False);
+            Assert.That(borders[4].enabled, Is.False);
             Assert.That(icons[0].enabled, Is.False);
             Assert.That(icons[1].enabled, Is.False);
             Assert.That(icons[2].enabled, Is.False);
+            Assert.That(icons[3].enabled, Is.False);
+            Assert.That(icons[4].enabled, Is.False);
         }
 
         [Test]
@@ -88,7 +92,7 @@ namespace RPG.Tests
             GameObject hudObject = CreateGameObject("Unconfigured HUD", false);
             InventoryHUD hud = hudObject.AddComponent<InventoryHUD>();
             LogAssert.Expect(LogType.Error,
-                "InventoryHUD requires one inventory, three borders, and three icons.");
+                "InventoryHUD requires one inventory, five borders, and five icons.");
 
             Assert.That(hud.Refresh(), Is.False);
             Assert.That(hud.Refresh(), Is.False);
@@ -137,7 +141,7 @@ namespace RPG.Tests
 
         private Image[] CreateImages(string prefix)
         {
-            var images = new Image[3];
+            var images = new Image[5];
             for (int index = 0; index < images.Length; index++)
             {
                 images[index] = CreateGameObject(prefix + " " + index).AddComponent<Image>();

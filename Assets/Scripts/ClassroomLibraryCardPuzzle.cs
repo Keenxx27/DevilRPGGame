@@ -77,7 +77,11 @@ namespace RPG
 
             if (State == ClassroomPuzzleState.WaitingForOpening)
             {
-                SetChairPickupEnabled(false);
+                // Chairs are regular world items and must be available as soon as
+                // the player enters the classroom. The flowerpot investigation
+                // still explains why the player may want to throw one, but it no
+                // longer gates the pickup interaction.
+                SetChairPickupEnabled(true);
             }
         }
 
@@ -94,6 +98,14 @@ namespace RPG
             if (libraryCard != null)
             {
                 libraryCard.PickedUp -= HandleLibraryCardPickedUp;
+            }
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                GrantLibraryCardShortcut();
             }
         }
 
@@ -171,8 +183,18 @@ namespace RPG
 
         private void HandleFlowerpotBroken()
         {
-            if (State == ClassroomPuzzleState.PotBroken
-                || State == ClassroomPuzzleState.Completed)
+            if (State == ClassroomPuzzleState.Completed)
+            {
+                PlayerInventory completedInventory = FindObjectOfType<PlayerInventory>();
+                if (libraryCard != null && completedInventory != null
+                    && completedInventory.HasItemById("library.card"))
+                {
+                    libraryCard.gameObject.SetActive(false);
+                }
+                return;
+            }
+
+            if (State == ClassroomPuzzleState.PotBroken)
             {
                 return;
             }
@@ -214,6 +236,32 @@ namespace RPG
                     chair.GetComponent<WorldItem>()?.SetPickupEnabled(enabled);
                 }
             }
+        }
+
+        private void GrantLibraryCardShortcut()
+        {
+            PlayerInventory playerInventory = FindObjectOfType<PlayerInventory>();
+            if (playerInventory == null || libraryCard == null)
+            {
+                Debug.LogError("[ClassroomLibraryCardShortcut] PlayerInventory or Library Card is missing.", this);
+                return;
+            }
+
+            if (playerInventory.HasItemById("library.card"))
+            {
+                Debug.Log("[ClassroomLibraryCardShortcut] Library Card is already in the inventory.", this);
+                return;
+            }
+
+            libraryCard.SetPickupEnabled(true);
+            if (!playerInventory.TryStore(libraryCard))
+            {
+                Debug.LogWarning("[ClassroomLibraryCardShortcut] Could not add Library Card. The inventory may be full.", this);
+                return;
+            }
+
+            State = ClassroomPuzzleState.Completed;
+            Debug.Log("[ClassroomLibraryCardShortcut] O pressed: Library Card added to inventory.", this);
         }
 
         private bool IsOrdinaryInvestigationState()

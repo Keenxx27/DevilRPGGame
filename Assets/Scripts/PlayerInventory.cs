@@ -6,7 +6,7 @@ namespace RPG
     [RequireComponent(typeof(MainCharacterMovement))]
     public class PlayerInventory : MonoBehaviour
     {
-        private const int SlotCount = 3;
+        private const int SlotCount = 5;
         private const float DropDistance = 1.2f;
 
         private readonly List<WorldItem> nearbyItems = new List<WorldItem>();
@@ -212,6 +212,14 @@ namespace RPG
             else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
             {
                 slots.Select(2);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4))
+            {
+                slots.Select(3);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad5))
+            {
+                slots.Select(4);
             }
         }
 
